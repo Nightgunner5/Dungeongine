@@ -2,7 +2,9 @@ package dungeongine.net;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 import dungeongine.net.packet.*;
+import dungeongine.server.Server;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -10,6 +12,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,12 +28,15 @@ public class Connection {
 		packets.put(0x00, Packet00KeepAlive.class);
 		packets.put(0x01, Packet01Handshake.class);
 		packets.put(0x02, Packet02Chat.class);
-		packets.put(0x03, Packet03SpellCast.class);
+		packets.put(0x05, Packet05Disconnect.class);
+		packets.put(0x10, Packet10SpellCast.class);
 	}
 
 	private final List<PacketListener> listeners = new LinkedList<>();
+	public final Socket socket;
 
 	public Connection(Socket socket) throws IOException {
+		this.socket = socket;
 		in = new DataInputStream(socket.getInputStream());
 		out = new DataOutputStream(socket.getOutputStream());
 		thread = new Thread(new ConnectionHandler());
@@ -58,10 +64,34 @@ public class Connection {
 
 	public synchronized void send(Packet packet) {
 		try {
+			if (packet instanceof Packet01Handshake) {
+				setVar("name", ((Packet01Handshake) packet).getPlayerName());
+				setVar("uuid", ((Packet01Handshake) packet).getUuid());
+			}
 			out.writeByte(packets.inverse().get(packet.getClass()));
 			packet.write(out);
 		} catch (IOException ex) {
-			logger.log(Level.WARNING, String.format("Exception sending packet %s", PacketUtils.toString(packet)), ex);
+			logger.log(Level.WARNING, String.format("Exception sending packet %s", NetworkUtils.toString(packet)), ex);
+		}
+	}
+
+	private final Map<String, Object> vars = Maps.newHashMap();
+	public <T> T setVar(String key, T value) {
+		return (T) vars.put(key, value);
+	}
+
+	public <T> T getVar(String key) {
+		return (T) vars.get(key);
+	}
+
+	public void disconnect() {
+		send(new Packet05Disconnect((String) getVar("uuid")));
+		try {
+			socket.close();
+		} catch (IOException ex) {
+		}
+		if (Server.clientMap.containsKey(getVar("uuid"))) {
+			Server.dropClient(this);
 		}
 	}
 
@@ -83,7 +113,7 @@ nextPacket:
 								}
 							}
 						}
-						logger.log(Level.WARNING, String.format("Unhandled packet: %s", PacketUtils.toString(packet)));
+						logger.log(Level.WARNING, String.format("Unhandled packet: %s", NetworkUtils.toString(packet)));
 					} else {
 						logger.log(Level.SEVERE, String.format("Unknown packet type %s", Integer.toHexString(packetID)));
 					}
