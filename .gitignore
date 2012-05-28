@@ -1,4 +1,9 @@
-﻿target/
+﻿# Maven
+target/
+
+# Java
+*.class
+*.jar
 
 # IntelliJ
 *.iml
