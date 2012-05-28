@@ -1,11 +1,13 @@
-package dungeongine.net.packet;
+package dungeongine.net;
+
+import dungeongine.net.packet.Packet;
 
 import java.lang.reflect.Field;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public final class PacketUtils {
-	private PacketUtils() {}
+public final class NetworkUtils {
+	private NetworkUtils() {}
 
 	public static String toString(Packet packet) {
 		StringBuilder sb = new StringBuilder(packet.getClass().getSimpleName());
@@ -21,7 +23,7 @@ public final class PacketUtils {
 			try {
 				sb.append(field.getName()).append(" = '").append(field.get(packet)).append('\'');
 			} catch (IllegalAccessException ex) {
-				Logger.getLogger(PacketUtils.class.getName()).log(Level.SEVERE, "", ex);
+				Logger.getLogger(NetworkUtils.class.getName()).log(Level.SEVERE, "", ex);
 			}
 		}
 		return sb.append('}').toString();

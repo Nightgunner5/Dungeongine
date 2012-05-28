@@ -4,7 +4,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-public class Packet03SpellCast implements Packet {
+public class Packet10SpellCast implements Packet {
 	private String spell;
 	private long x;
 	private long y;
