@@ -18,11 +18,32 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class Server implements Runnable {
+
 	private Server() {}
 
+	private static Thread thread;
 	private static final Server server = new Server();
 	public static void start() {
-		new Thread(server, "Server thread").start();
+		thread = new Thread(server, "Server thread");
+		thread.start();
+	}
+
+	public static void stop() {
+		synchronized (clients) {
+			for (Connection client : clients)
+				client.disconnect();
+			clients.clear();
+			clientMap.clear();
+		}
+		try {
+			server.serverSocket.close();
+			server.serverSocket = null;
+		} catch (Exception ex) {
+			Logger.getLogger(Server.class.getName()).log(Level.WARNING, "Could not close server socket", ex);
+		}
+		if (thread != null)
+			thread.interrupt();
+		thread = null;
 	}
 
 	private static final Collection<Connection> clients = new LinkedList<>();
@@ -60,10 +81,10 @@ public final class Server implements Runnable {
 		}
 	}
 
+	private ServerSocket serverSocket;
 	@Override
 	public void run() {
 		Logger logger = Logger.getLogger(Server.class.getName());
-		ServerSocket serverSocket;
 		try {
 			serverSocket = new ServerSocket(Main.PORT);
 		} catch (IOException ex) {
@@ -88,6 +109,7 @@ public final class Server implements Runnable {
 				logger.log(Level.WARNING, "Client connection failed", ex);
 			}
 		}
+		Logger.getLogger(Server.class.getName()).info("Stopping server...");
 	}
 
 	public static void dropClient(Connection connection) {
