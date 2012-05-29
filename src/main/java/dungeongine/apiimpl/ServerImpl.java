@@ -56,8 +56,9 @@ public class ServerImpl implements Server {
 		pluginDir.mkdirs();
 		for (File pluginFile : pluginDir.listFiles()) {
 			if (pluginFile.getName().endsWith(".jar")) {
+				JarFile pluginJar = null;
 				try {
-					JarFile pluginJar = new JarFile(pluginFile);
+					pluginJar = new JarFile(pluginFile);
 					for (Object o : new Yaml().loadAll(pluginJar.getInputStream(pluginJar.getJarEntry("plugin.yml")))) {
 						if (o instanceof Map<?, ?>) {
 							Map<String, String> map = (Map<String, String>) o;
@@ -69,7 +70,14 @@ public class ServerImpl implements Server {
 						}
 					}
 				} catch (IOException ex) {
-					Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, "Could not open plugin jar for " + pluginFile, ex);
+					Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, String.format("Could not open plugin jar for '%s'.", pluginFile), ex);
+				} finally {
+					if (pluginJar != null)
+						try {
+							pluginJar.close();
+						} catch (IOException ex) {
+							Logger.getLogger(ServerImpl.class.getName()).log(Level.SEVERE, String.format("Closing jar '%s' threw an exception:", pluginFile), ex);
+						}
 				}
 			}
 		}
