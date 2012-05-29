@@ -3,6 +3,7 @@ package dungeongine.gui;
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import java.awt.*;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -10,6 +11,13 @@ import java.util.logging.SimpleFormatter;
 
 public class ConsoleGUI extends JTextPane {
 	public ConsoleGUI() {
+		setMinimumSize(new Dimension(1, 100));
+		setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
+		setPreferredSize(new Dimension(1, 100));
+
+		setEditable(false);
+		setAutoscrolls(true);
+
 		Logger.getLogger("").addHandler(new Handler() {
 			{
 				setFormatter(new SimpleFormatter());

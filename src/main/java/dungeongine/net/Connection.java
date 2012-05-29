@@ -85,13 +85,19 @@ public class Connection {
 	}
 
 	public void disconnect() {
+		Server.dropClient(this);
+		if (getVar("uuid") == null) {
+			try {
+				socket.close();
+			} catch (IOException ex) {
+			}
+			return;
+		}
 		send(new Packet05Disconnect((String) getVar("uuid")));
 		try {
+			out.flush();
 			socket.close();
 		} catch (IOException ex) {
-		}
-		if (Server.clientMap.containsKey(getVar("uuid"))) {
-			Server.dropClient(this);
 		}
 	}
 
