@@ -37,6 +37,7 @@ public class Events {
 	}
 
 	public static synchronized void dispatch(Event event) {
+		Logger.getLogger(Events.class.getName()).log(Level.INFO, "Dispatching event: " + event);
 		for (RegisteredHandler handler : getHandlerSet((Class<? extends Event>) event.getClass().getInterfaces()[0])) {
 			try {
 				handler.method.invoke(handler.object, event);
