@@ -13,9 +13,11 @@ public interface Server {
 	void reloadPlugins();
 
 	boolean isPluginAvailable(String name);
+
 	boolean isPluginLoaded(String name);
 
 	void loadPlugin(String name);
+
 	void unloadPlugin(String name);
 
 	Plugin getPlugin(String name);

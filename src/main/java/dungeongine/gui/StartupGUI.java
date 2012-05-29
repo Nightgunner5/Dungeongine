@@ -167,6 +167,7 @@ public class StartupGUI extends JPanel {
 	}
 
 	private boolean allowA = false, allowB = true;
+
 	private void setAllowStartGameA(boolean allow) {
 		allowA = allow;
 		startServer.setEnabled(allow);

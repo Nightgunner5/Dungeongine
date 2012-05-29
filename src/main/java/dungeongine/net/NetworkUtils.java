@@ -20,7 +20,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class NetworkUtils {
-	private NetworkUtils() {}
+	private NetworkUtils() {
+	}
 
 	public static String toString(Packet packet) {
 		StringBuilder sb = new StringBuilder(packet.getClass().getSimpleName());
@@ -59,7 +60,7 @@ public final class NetworkUtils {
 	}
 
 	public static Location readLocation(DataInput input) throws IOException {
-		return new Location(input.readUTF(), input.readLong(),  input.readLong());
+		return new Location(input.readUTF(), input.readLong(), input.readLong());
 	}
 
 	public static void write(DataOutput output, Tile tile) throws IOException {

@@ -12,7 +12,8 @@ public class Packet01Handshake implements Packet {
 	private String uuid;
 	private String playerName;
 
-	public Packet01Handshake() {}
+	public Packet01Handshake() {
+	}
 
 	public Packet01Handshake(String playerName) {
 		this.version = Connection.NETWORK_VERSION;
@@ -46,7 +47,7 @@ public class Packet01Handshake implements Packet {
 
 	@Override
 	public void read(DataInput input) throws IOException {
-	  	version = input.readLong();
+		version = input.readLong();
 		uuid = input.readUTF();
 		playerName = input.readUTF();
 	}

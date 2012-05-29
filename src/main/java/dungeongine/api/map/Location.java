@@ -10,9 +10,7 @@ import java.math.RoundingMode;
 
 import static com.google.common.math.LongMath.*;
 
-/**
- * Represents an immutable location in a world.
- */
+/** Represents an immutable location in a world. */
 public final class Location implements Serializable {
 	private final String world;
 	private final long x;

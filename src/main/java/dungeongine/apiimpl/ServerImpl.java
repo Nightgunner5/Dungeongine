@@ -65,7 +65,7 @@ public class ServerImpl implements Server {
 							for (Map.Entry<String, String> entry : map.entrySet()) {
 								if (availablePlugins.containsKey(entry.getKey()))
 									throw new IOException("Failed to load plugin.yml");
-								availablePlugins.put(entry.getKey(),  entry.getValue());
+								availablePlugins.put(entry.getKey(), entry.getValue());
 							}
 						}
 					}

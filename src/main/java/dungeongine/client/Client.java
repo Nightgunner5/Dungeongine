@@ -14,9 +14,12 @@ import java.util.logging.Logger;
 
 public final class Client {
 	private static final Logger logger = Logger.getLogger(Client.class.getName());
-	private Client() {}
+
+	private Client() {
+	}
 
 	private static Connection connection;
+
 	public static void start(InetAddress address) throws IOException {
 		connection = new Connection(new Socket(address, Main.PORT));
 		logger.info(String.format("Client connected to %s on port %d", InetAddresses.toAddrString(address), Main.PORT));

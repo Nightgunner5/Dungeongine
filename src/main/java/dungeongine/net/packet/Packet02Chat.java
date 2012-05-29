@@ -7,7 +7,8 @@ import java.io.IOException;
 public class Packet02Chat implements Packet {
 	private String message;
 
-	public Packet02Chat() {}
+	public Packet02Chat() {
+	}
 
 	public Packet02Chat(String message) {
 		this.message = message;

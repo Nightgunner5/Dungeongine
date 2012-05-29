@@ -12,6 +12,7 @@ import java.util.logging.SimpleFormatter;
 public class ConsoleGUI extends JTextPane {
 	private static final ConsoleGUI _instance = new ConsoleGUI();
 	static final JScrollPane instance = new JScrollPane(_instance, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
 	static {
 		instance.setMinimumSize(new Dimension(-1, 100));
 		instance.setMaximumSize(new Dimension(-1, 100));

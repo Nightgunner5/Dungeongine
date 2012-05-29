@@ -82,6 +82,7 @@ public class Connection {
 	}
 
 	private final Map<String, Object> vars = Maps.newHashMap();
+
 	public <T> T setVar(String key, T value) {
 		return (T) vars.put(key, value);
 	}

@@ -6,6 +6,7 @@ import java.net.InetAddress;
 
 public interface PlayerJoinEvent extends PlayerEvent, Cancellable {
 	void setMessage(String message);
+
 	String getMessage();
 
 	InetAddress getAddress();

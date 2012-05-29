@@ -10,9 +10,12 @@ import java.net.InetAddress;
 public final class GUI {
 	static boolean finishedSetup = false;
 
-	private GUI() {}
+	private GUI() {
+	}
+
 	private static JFrame window;
 	private static JFrame server;
+
 	public static void start() {
 		try {
 			UIManager.setLookAndFeel(new javax.swing.plaf.nimbus.NimbusLookAndFeel());

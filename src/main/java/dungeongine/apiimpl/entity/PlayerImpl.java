@@ -57,6 +57,7 @@ public class PlayerImpl implements Player {
 		}
 	}
 	);
+
 	public static Player get(Connection connection) {
 		return playerCache.getUnchecked(connection);
 	}

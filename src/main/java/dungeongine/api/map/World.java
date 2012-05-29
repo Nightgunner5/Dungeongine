@@ -7,8 +7,10 @@ public interface World {
 	String getName();
 
 	Tile getTileAt(Location location);
+
 	Tile getTileAt(long x, long y);
 
 	Entity[] getEntities();
+
 	Player[] getPlayers();
 }

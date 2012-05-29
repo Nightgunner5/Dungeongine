@@ -20,10 +20,12 @@ import java.util.logging.Logger;
 
 public final class Server implements Runnable {
 
-	private Server() {}
+	private Server() {
+	}
 
 	private static Thread thread;
 	private static final Server server = new Server();
+
 	public static void start() {
 		thread = new Thread(server, "Server thread");
 		thread.start();
@@ -51,6 +53,7 @@ public final class Server implements Runnable {
 	public static final Map<String, Connection> clientMap = Maps.newConcurrentMap();
 
 	private static List<PacketListener> listeners = new LinkedList<>();
+
 	public static void registerListener(PacketListener listener) {
 		synchronized (listeners) {
 			listeners.add(listener);
@@ -83,6 +86,7 @@ public final class Server implements Runnable {
 	}
 
 	private ServerSocket serverSocket;
+
 	@Override
 	public void run() {
 		ServerLogger serverLogger;

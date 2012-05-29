@@ -7,7 +7,8 @@ import java.io.IOException;
 public class Packet05Disconnect implements Packet {
 	private String uuid;
 
-	public Packet05Disconnect() {}
+	public Packet05Disconnect() {
+	}
 
 	public Packet05Disconnect(String uuid) {
 		this.uuid = uuid;

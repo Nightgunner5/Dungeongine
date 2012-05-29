@@ -23,6 +23,7 @@ public class ClientGUI extends JPanel {
 	private final JEditorPane chatBox;
 	private final Element chatElement;
 	private final JTextField chatInput;
+
 	private ClientGUI() {
 		setLayout(new BorderLayout());
 		mainView = new JPanel();

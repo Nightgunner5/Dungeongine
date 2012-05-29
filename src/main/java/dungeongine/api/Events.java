@@ -17,8 +17,8 @@ public class Events {
 	private static final Map<Class<? extends Event>, SortedSet<RegisteredHandler>> handlers = Maps.newIdentityHashMap();
 
 	/**
-	 * Register an event listener. The methods that handle events must be annotated with
-	 * {@link dungeongine.api.event.EventHandler}.
+	 * Register an event listener. The methods that handle events must be annotated with {@link
+	 * dungeongine.api.event.EventHandler}.
 	 */
 	public static synchronized void register(EventListener listener) {
 		for (Method method : listener.getClass().getDeclaredMethods()) {
@@ -33,22 +33,17 @@ public class Events {
 		}
 	}
 
-	/**
-	 * Unregister an event listener that was previously registered using
-	 * {@link #register(dungeongine.api.event.EventListener)}.
-	 */
+	/** Unregister an event listener that was previously registered using {@link #register(dungeongine.api.event.EventListener)}. */
 	public static synchronized void unregister(EventListener listener) {
 		for (SortedSet<RegisteredHandler> registeredHandlers : handlers.values()) {
-			for (Iterator<RegisteredHandler> it = registeredHandlers.iterator(); it.hasNext();) {
+			for (Iterator<RegisteredHandler> it = registeredHandlers.iterator(); it.hasNext(); ) {
 				if (it.next().object == listener)
 					it.remove();
 			}
 		}
 	}
 
-	/**
-	 * Dispatch an event to the registered listeners.
-	 */
+	/** Dispatch an event to the registered listeners. */
 	public static synchronized void dispatch(Event event) {
 		Logger.getLogger(Events.class.getName()).log(Level.FINE, "Dispatching event: " + event);
 		for (RegisteredHandler handler : getHandlerSet((Class<? extends Event>) event.getClass().getInterfaces()[0])) {
