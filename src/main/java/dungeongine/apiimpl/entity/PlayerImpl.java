@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import dungeongine.api.entity.Player;
 import dungeongine.net.Connection;
+import dungeongine.net.packet.Packet02Chat;
 
 public class PlayerImpl implements Player {
 	private final Connection connection;
@@ -21,6 +22,16 @@ public class PlayerImpl implements Player {
 	@Override
 	public String getName() {
 		return connection.getVar("name");
+	}
+
+	@Override
+	public void sendChat(String message) {
+		connection.send(new Packet02Chat(message));
+	}
+
+	@Override
+	public String toString() {
+		return String.format("Player {id = '%s', name = '%s'}", getId(), getName());
 	}
 
 	@Override
