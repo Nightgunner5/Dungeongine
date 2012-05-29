@@ -43,7 +43,7 @@ public final class GUI {
 		server.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		server.pack();
 		server.setLocationByPlatform(true);
-		//server.setVisible(true);
+		server.setVisible(true);
 	}
 
 	public static void clientStartup(InetAddress host, String name) {

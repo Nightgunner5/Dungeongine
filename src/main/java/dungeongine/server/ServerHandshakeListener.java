@@ -1,5 +1,6 @@
 package dungeongine.server;
 
+import com.google.common.base.Strings;
 import dungeongine.api.Events;
 import dungeongine.api.event.player.PlayerJoinEvent;
 import dungeongine.apiimpl.event.player.PlayerJoinEventImpl;
@@ -36,7 +37,7 @@ public class ServerHandshakeListener implements PacketListener {
 					connection.disconnect();
 					return true;
 				}
-				if (event.getMessage() != null) {
+				if (!Strings.isNullOrEmpty(event.getMessage())) {
 					connection.setVar("connectMessage", event.getMessage());
 					for (Connection client : Server.clientMap.values()) {
 						if (client != connection && client.getVar("connectMessage") != null)

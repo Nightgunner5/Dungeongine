@@ -11,11 +11,13 @@ import java.util.Set;
 
 public class PlayerChatEventImpl extends PlayerEventImpl implements PlayerChatEvent {
 	private String message;
+	private String rawMessage;
 	private final Set<Player> recipients;
 
-	public PlayerChatEventImpl(Connection sender, String message) {
+	public PlayerChatEventImpl(Connection sender, String rawMessage) {
 		super(sender);
-		this.message = message;
+		this.rawMessage = rawMessage;
+		message = String.format("<b>%s:</b> %s", sender.getVar("name"), rawMessage);
 		recipients = new LinkedHashSet<>();
 		for (Connection connection : Server.clientMap.values()) {
 			recipients.add(PlayerImpl.get(connection));
@@ -30,6 +32,11 @@ public class PlayerChatEventImpl extends PlayerEventImpl implements PlayerChatEv
 	@Override
 	public String getMessage() {
 		return message;
+	}
+
+	@Override
+	public String getRawMessage() {
+		return rawMessage;
 	}
 
 	@Override

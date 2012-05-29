@@ -67,6 +67,34 @@ public class StartupGUI extends JPanel {
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 1;
+		new Thread("IP validator") {
+			@Override
+			public void run() {
+				while (true) {
+					try {
+						Thread.sleep(100);
+						try {
+							InetAddress.getByName(fieldAddress.getText());
+							SwingUtilities.invokeAndWait(new Runnable() {
+								@Override
+								public void run() {
+									setAllowStartGameB(true);
+								}
+							});
+						} catch (UnknownHostException ex) {
+							SwingUtilities.invokeAndWait(new Runnable() {
+								@Override
+								public void run() {
+									setAllowStartGameB(false);
+								}
+							});
+						}
+					} catch (Exception ex) {
+						return;
+					}
+				}
+			}
+		}.start();
 		fieldAddress.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void insertUpdate(DocumentEvent e) {
@@ -84,11 +112,9 @@ public class StartupGUI extends JPanel {
 			}
 
 			private void update(DocumentEvent e) {
-				try {
-					InetAddress.getByName(fieldAddress.getText());
-					setAllowStartGameB(true);
-				} catch (UnknownHostException ex) {
-					setAllowStartGameB(false);
+				setAllowStartGameB(false);
+				synchronized (fieldAddress) {
+					fieldAddress.notify();
 				}
 			}
 		});

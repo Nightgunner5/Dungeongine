@@ -1,8 +1,13 @@
 package dungeongine.net;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
+import dungeongine.api.Dungeongine;
+import dungeongine.api.Events;
+import dungeongine.api.event.player.PlayerLeaveEvent;
+import dungeongine.apiimpl.event.player.PlayerLeaveEventImpl;
 import dungeongine.net.packet.*;
 import dungeongine.server.Server;
 
@@ -86,6 +91,10 @@ public class Connection {
 	}
 
 	public void disconnect() {
+		disconnect(false);
+	}
+
+	private void disconnect(boolean alreadyDead) {
 		Server.dropClient(this);
 		if (getVar("uuid") == null) {
 			try {
@@ -94,7 +103,14 @@ public class Connection {
 			}
 			return;
 		}
-		send(new Packet05Disconnect((String) getVar("uuid")));
+		if (alreadyDead) {
+			PlayerLeaveEvent event = new PlayerLeaveEventImpl(this);
+			Events.dispatch(event);
+			if (!Strings.isNullOrEmpty(event.getMessage()))
+				Dungeongine.getServer().broadcastChatMessage(event.getMessage());
+		} else {
+			send(new Packet05Disconnect((String) getVar("uuid")));
+		}
 		try {
 			out.flush();
 			socket.close();
@@ -130,6 +146,7 @@ nextPacket:
 						Thread.currentThread().interrupt();
 				}
 			}
+			disconnect(true);
 		}
 	}
 }

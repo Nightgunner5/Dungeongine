@@ -16,7 +16,7 @@ public class ServerChatListener implements PacketListener {
 			Packet02Chat chat = (Packet02Chat) packet;
 			if (chat.getMessage().trim().isEmpty())
 				return true;
-			PlayerChatEvent event = new PlayerChatEventImpl(connection, "<b>" + connection.getVar("name") + ":</b> " + chat.getMessage().replace("<", "&lt;").trim());
+			PlayerChatEvent event = new PlayerChatEventImpl(connection, chat.getMessage().replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").trim());
 			Events.dispatch(event);
 			if (!event.isCancelled() && !event.getMessage().isEmpty()) {
 				for (Player recipient : event.getRecipients()) {

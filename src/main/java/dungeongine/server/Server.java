@@ -3,6 +3,7 @@ package dungeongine.server;
 import com.google.common.collect.Maps;
 import dungeongine.Main;
 import dungeongine.api.Dungeongine;
+import dungeongine.api.Events;
 import dungeongine.net.Connection;
 import dungeongine.net.packet.Packet;
 import dungeongine.net.packet.PacketListener;
@@ -84,6 +85,8 @@ public final class Server implements Runnable {
 	private ServerSocket serverSocket;
 	@Override
 	public void run() {
+		ServerLogger serverLogger;
+		Events.register(serverLogger = new ServerLogger());
 		Logger logger = Logger.getLogger(Server.class.getName());
 		try {
 			serverSocket = new ServerSocket(Main.PORT);
@@ -110,6 +113,7 @@ public final class Server implements Runnable {
 			}
 		}
 		Logger.getLogger(Server.class.getName()).info("Stopping server...");
+		Events.unregister(serverLogger);
 	}
 
 	public static void dropClient(Connection connection) {
