@@ -2,6 +2,7 @@ package dungeongine.server;
 
 import com.google.common.collect.Maps;
 import dungeongine.Main;
+import dungeongine.api.Dungeongine;
 import dungeongine.net.Connection;
 import dungeongine.net.packet.Packet;
 import dungeongine.net.packet.PacketListener;
@@ -70,6 +71,7 @@ public final class Server implements Runnable {
 			return;
 		}
 		Logger.getLogger(Server.class.getName()).info("Server listening on port " + Main.PORT);
+		Dungeongine.getServer().reloadPlugins();
 		while (!Thread.interrupted()) {
 			try {
 				Socket socket = serverSocket.accept();
