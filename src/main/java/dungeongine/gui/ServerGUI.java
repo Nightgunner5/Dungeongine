@@ -1,7 +1,6 @@
 package dungeongine.gui;
 
 import com.google.common.collect.Iterators;
-import dungeongine.Main;
 import dungeongine.net.Connection;
 import dungeongine.net.NetworkUtils;
 import dungeongine.server.Server;
@@ -13,11 +12,10 @@ import java.util.Map;
 import java.util.Set;
 
 public class ServerGUI extends JPanel {
-	private static ServerGUI instance;
-	private static JList<String> playerList;
+	static final ServerGUI instance = new ServerGUI();
+	private final JList<String> playerList;
 
-	public ServerGUI() {
-		instance = this;
+	private ServerGUI() {
 		playerList = new JList<>(new AbstractListModel<String>() {
 			@Override
 			public int getSize() {
@@ -31,7 +29,6 @@ public class ServerGUI extends JPanel {
 			}
 		});
 		add(playerList);
-		Main.serverStartup();
 		Timer timer = new Timer(200, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

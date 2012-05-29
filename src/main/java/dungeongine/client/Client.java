@@ -10,7 +10,6 @@ import dungeongine.net.packet.PacketListener;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class Client {
@@ -18,13 +17,9 @@ public final class Client {
 	private Client() {}
 
 	private static Connection connection;
-	public static void start(InetAddress address) {
-		try {
-			connection = new Connection(new Socket(address, Main.PORT));
-			logger.info(String.format("Client connected to %s on port %d", InetAddresses.toAddrString(address), Main.PORT));
-		} catch (IOException ex) {
-			logger.log(Level.SEVERE, "Client connection failed", ex);
-		}
+	public static void start(InetAddress address) throws IOException {
+		connection = new Connection(new Socket(address, Main.PORT));
+		logger.info(String.format("Client connected to %s on port %d", InetAddresses.toAddrString(address), Main.PORT));
 	}
 
 	public static void addListener(PacketListener listener) {

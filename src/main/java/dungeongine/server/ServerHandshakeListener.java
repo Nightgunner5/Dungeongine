@@ -36,8 +36,14 @@ public class ServerHandshakeListener implements PacketListener {
 					connection.disconnect();
 					return true;
 				}
-				if (event.getMessage() != null)
+				if (event.getMessage() != null) {
+					connection.setVar("connectMessage", event.getMessage());
+					for (Connection client : Server.clientMap.values()) {
+						if (client != connection && client.getVar("connectMessage") != null)
+							connection.send(new Packet02Chat((String) client.getVar("connectMessage")));
+					}
 					Server.broadcast(new Packet02Chat(event.getMessage()));
+				}
 			} else {
 				connection.disconnect();
 			}

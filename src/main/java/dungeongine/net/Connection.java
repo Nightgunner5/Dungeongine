@@ -10,6 +10,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -125,6 +126,8 @@ nextPacket:
 					}
 				} catch (IOException | InstantiationException | IllegalAccessException ex) {
 					logger.log(Level.WARNING, "Exception in packet read:", ex);
+					if (ex instanceof SocketException)
+						Thread.currentThread().interrupt();
 				}
 			}
 		}

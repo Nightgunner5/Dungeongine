@@ -13,7 +13,7 @@ public class PlayerJoinEventImpl extends PlayerEventImpl implements PlayerJoinEv
 	public PlayerJoinEventImpl(Connection connection) {
 		super(connection);
 		this.connection = connection;
-		this.message = String.format("%s connected.", connection.getVar("name"));
+		this.message = String.format("<b>%s</b> connected.", connection.getVar("name"));
 	}
 
 	@Override

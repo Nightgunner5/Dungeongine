@@ -1,7 +1,8 @@
 package dungeongine.gui;
 
-import dungeongine.Main;
 import dungeongine.client.Client;
+import dungeongine.net.NetworkUtils;
+import dungeongine.net.packet.Packet01Handshake;
 import dungeongine.net.packet.Packet02Chat;
 
 import javax.swing.*;
@@ -12,35 +13,20 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ClientGUI extends JPanel {
-	private static ClientGUI instance;
-	private static JPanel mainView;
-	private static JEditorPane chatBox;
-	private static Element chatElement;
-	private static JTextField chatInput;
-	public ClientGUI() {
-		instance = this;
+	static final ClientGUI instance = new ClientGUI();
+	private final JPanel mainView;
+	private final JEditorPane chatBox;
+	private final Element chatElement;
+	private final JTextField chatInput;
+	private ClientGUI() {
 		setLayout(new BorderLayout());
 		mainView = new JPanel();
 		mainView.setPreferredSize(new Dimension(640, 480));
-		mainView.setLayout(new GridLayout(0, 1));
-		mainView.add(new JLabel("What is your name, good sir... or madam? Forgive me; it is dark and I cannot see your face."));
-		final JTextField username = new JTextField();
-		mainView.add(username);
-		final JTextField address = new JTextField("127.0.0.1");
-		mainView.add(address);
-		final JButton submit = new JButton("Enter World");
-		submit.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Main.clientStartup(address.getText(), username.getText());
-				mainView.removeAll();
-				chatInput.setEditable(true);
-			}
-		});
-
-		mainView.add(submit);
 		add(mainView, BorderLayout.NORTH);
 		chatBox = new JEditorPane();
 		chatBox.setContentType("text/html");
@@ -76,16 +62,33 @@ public class ClientGUI extends JPanel {
 			public void run() {
 				if (!GUI.finishedSetup)
 					return;
-				HTMLDocument document = (HTMLDocument) chatBox.getDocument();
-				boolean atEnd = chatBox.getCaretPosition() == document.getLength() - 1;
+				HTMLDocument document = (HTMLDocument) instance.chatBox.getDocument();
+				boolean atEnd = instance.chatBox.getCaretPosition() == document.getLength() - 1;
 				try {
-					document.insertBeforeEnd(chatElement, "<br>" + message);
+					document.insertBeforeEnd(instance.chatElement, "<br>" + message);
 				} catch (IOException | BadLocationException ex) {
 					throw new RuntimeException(ex);
 				}
 				if (atEnd)
-					chatBox.setCaretPosition(document.getLength() - 1);
+					instance.chatBox.setCaretPosition(document.getLength() - 1);
 			}
 		});
+	}
+
+	public static boolean connect(InetAddress host) {
+		try {
+			Client.start(host);
+			NetworkUtils.registerClientListeners();
+			return true;
+		} catch (IOException ex) {
+			Logger.getLogger(ClientGUI.class.getName()).log(Level.SEVERE, "Connection failed.", ex);
+			return false;
+		}
+	}
+
+	public static void handshake(String name) {
+		Logger.getLogger(ClientGUI.class.getName()).info("Logging in as '" + name.trim() + "'...");
+		Client.send(new Packet01Handshake(name));
+		instance.chatInput.setEditable(true);
 	}
 }

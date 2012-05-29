@@ -10,13 +10,16 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 public class ConsoleGUI extends JTextPane {
-	public ConsoleGUI() {
-		setMinimumSize(new Dimension(1, 100));
-		setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
-		setPreferredSize(new Dimension(1, 100));
+	private static final ConsoleGUI _instance = new ConsoleGUI();
+	static final JScrollPane instance = new JScrollPane(_instance, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+	static {
+		instance.setMinimumSize(new Dimension(-1, 100));
+		instance.setMaximumSize(new Dimension(-1, 100));
+		instance.setPreferredSize(new Dimension(-1, 100));
+	}
 
+	private ConsoleGUI() {
 		setEditable(false);
-		setAutoscrolls(true);
 
 		Logger.getLogger("").addHandler(new Handler() {
 			{
@@ -25,7 +28,7 @@ public class ConsoleGUI extends JTextPane {
 
 			@Override
 			public void publish(LogRecord record) {
-				updateTextPane(String.format("%TT [%s] %s\n", record.getMillis(), record.getLevel(), getFormatter().formatMessage(record)));
+				updateTextPane(String.format("%TT [%s] %s %s%n", record.getMillis(), record.getLevel(), getFormatter().formatMessage(record), record.getThrown() == null ? "" : record.getThrown()));
 			}
 
 			@Override
@@ -38,19 +41,19 @@ public class ConsoleGUI extends JTextPane {
 		});
 	}
 
-	private void updateTextPane(final String text) {
+	private static void updateTextPane(final String text) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
 				if (!GUI.finishedSetup)
 					return;
-				Document document = ConsoleGUI.this.getDocument();
+				Document document = _instance.getDocument();
 				try {
 					document.insertString(document.getLength(), text, null);
 				} catch (BadLocationException ex) {
 					throw new RuntimeException(ex);
 				}
-				ConsoleGUI.this.setCaretPosition(document.getLength() - 1);
+				_instance.setCaretPosition(document.getLength() - 1);
 			}
 		});
 	}
