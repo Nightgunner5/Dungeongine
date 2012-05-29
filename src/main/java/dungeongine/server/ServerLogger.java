@@ -13,7 +13,7 @@ public class ServerLogger implements EventListener {
 	public void onPlayerChat(PlayerChatEvent event) {
 		if (event.isCancelled())
 			return;
-		Logger.getLogger(ServerLogger.class.getName()).info(String.format("[Chat] %s: %s", event.getPlayer().getName(), event.getMessage()));
+		Logger.getLogger(ServerLogger.class.getName()).info(String.format("[Chat] %s: %s", event.getPlayer().getName(), event.getRawMessage()));
 	}
 
 	@EventHandler(type = PlayerJoinEvent.class, priority = Integer.MAX_VALUE)
