@@ -15,8 +15,13 @@ public abstract class StorageImpl {
 	private final String identifier;
 
 	public StorageImpl(String identifier) {
-		this.identifier = CharMatcher.ASCII.and(CharMatcher.JAVA_ISO_CONTROL.negate()).negate().removeFrom(identifier);
+		this.identifier = CharMatcher.anyOf("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-.,").negate().removeFrom(identifier);
 		load(getData());
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		save();
 	}
 
 	protected abstract void load(Map<String, Serializable> data);
@@ -47,7 +52,7 @@ public abstract class StorageImpl {
 		Events.dispatch(new DataChangedEventImpl<>(name, oldValue, newValue));
 	}
 
-	private static final File SAVE_DIR = new File("dungeongine.save");
+	private static final File SAVE_DIR = new File(System.getProperty("user.home"), ".dungeongine-save");
 
 	static {
 		SAVE_DIR.mkdirs();
