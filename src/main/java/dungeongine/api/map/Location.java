@@ -72,6 +72,10 @@ public final class Location implements Serializable {
 		return Dungeongine.getWorld(world);
 	}
 
+	public Tile getTile() {
+		return getWorld().getTileAt(this);
+	}
+
 	private void checkWorld(Location other) throws IllegalArgumentException {
 		Preconditions.checkNotNull(world);
 		Preconditions.checkArgument(world.equals(other.world));

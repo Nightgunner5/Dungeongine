@@ -7,16 +7,12 @@ import dungeongine.api.entity.Player;
 import dungeongine.net.Connection;
 import dungeongine.net.packet.Packet02Chat;
 
-public class PlayerImpl implements Player {
+public class PlayerImpl extends EntityImpl implements Player {
 	private final Connection connection;
 
 	public PlayerImpl(Connection connection) {
+		super((String) connection.getVar("uuid"));
 		this.connection = connection;
-	}
-
-	@Override
-	public String getId() {
-		return connection.getVar("uuid");
 	}
 
 	@Override
