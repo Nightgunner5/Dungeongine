@@ -16,17 +16,27 @@ import java.util.logging.Logger;
 public class Events {
 	private static final Map<Class<? extends Event>, SortedSet<RegisteredHandler>> handlers = Maps.newIdentityHashMap();
 
+	/**
+	 * Register an event listener. The methods that handle events must be annotated with
+	 * {@link dungeongine.api.event.EventHandler}.
+	 */
 	public static synchronized void register(EventListener listener) {
 		for (Method method : listener.getClass().getDeclaredMethods()) {
 			EventHandler annotation = method.getAnnotation(EventHandler.class);
-			RegisteredHandler handler = new RegisteredHandler();
-			handler.object = listener;
-			handler.method = method;
-			handler.priority = annotation.priority();
-			getHandlerSet(annotation.type()).add(handler);
+			if (annotation != null) {
+				RegisteredHandler handler = new RegisteredHandler();
+				handler.object = listener;
+				handler.method = method;
+				handler.priority = annotation.priority();
+				getHandlerSet(annotation.type()).add(handler);
+			}
 		}
 	}
 
+	/**
+	 * Unregister an event listener that was previously registered using
+	 * {@link #register(dungeongine.api.event.EventListener)}.
+	 */
 	public static synchronized void unregister(EventListener listener) {
 		for (SortedSet<RegisteredHandler> registeredHandlers : handlers.values()) {
 			for (Iterator<RegisteredHandler> it = registeredHandlers.iterator(); it.hasNext();) {
@@ -36,6 +46,9 @@ public class Events {
 		}
 	}
 
+	/**
+	 * Dispatch an event to the registered listeners.
+	 */
 	public static synchronized void dispatch(Event event) {
 		Logger.getLogger(Events.class.getName()).log(Level.INFO, "Dispatching event: " + event);
 		for (RegisteredHandler handler : getHandlerSet((Class<? extends Event>) event.getClass().getInterfaces()[0])) {
@@ -85,11 +98,7 @@ public class Events {
 
 		@Override
 		public String toString() {
-			return "EventHandler {" +
-					"object=" + object +
-					", method=" + method +
-					", priority=" + priority +
-					'}';
+			return String.format("EventHandler {object = %s, method = %s, priority = %d}", object, method, priority);
 		}
 	}
 }

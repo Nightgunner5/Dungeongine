@@ -18,9 +18,9 @@ public final class Main {
 		GUI.start();
 	}
 
-	public static void clientStartup(String characterName) {
+	public static void clientStartup(String host, String characterName) {
 		try {
-			Client.start(InetAddress.getByName("127.0.0.1"));
+			Client.start(InetAddress.getByName(host));
 		} catch (UnknownHostException ex) {
 			throw new RuntimeException(ex);
 		}

@@ -24,14 +24,23 @@ public class ClientGUI extends JPanel {
 		setLayout(new BorderLayout());
 		mainView = new JPanel();
 		mainView.setPreferredSize(new Dimension(640, 480));
-		mainView.add(listen(new JButton("Join Game"), new Runnable() {
+		mainView.setLayout(new GridLayout(0, 1));
+		mainView.add(new JLabel("What is your name, good sir... or madam? Forgive me; it is dark and I cannot see your face."));
+		final JTextField username = new JTextField();
+		mainView.add(username);
+		final JTextField address = new JTextField("127.0.0.1");
+		mainView.add(address);
+		final JButton submit = new JButton("Enter World");
+		submit.addActionListener(new ActionListener() {
 			@Override
-			public void run() {
-				Main.clientStartup(JOptionPane.showInputDialog(ClientGUI.this, "What should your character be named?"));
+			public void actionPerformed(ActionEvent e) {
+				Main.clientStartup(address.getText(), username.getText());
 				mainView.removeAll();
 				chatInput.setEditable(true);
 			}
-		}));
+		});
+
+		mainView.add(submit);
 		add(mainView, BorderLayout.NORTH);
 		chatBox = new JEditorPane();
 		chatBox.setContentType("text/html");
@@ -49,16 +58,6 @@ public class ClientGUI extends JPanel {
 			}
 		}), BorderLayout.SOUTH);
 		chatInput.setEditable(false);
-	}
-
-	private static JButton listen(JButton button, final Runnable listener) {
-		button.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				listener.run();
-			}
-		});
-		return button;
 	}
 
 	private static JTextField listen(JTextField field, final Runnable listener) {

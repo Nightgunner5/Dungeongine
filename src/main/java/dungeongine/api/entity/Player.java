@@ -2,14 +2,12 @@ package dungeongine.api.entity;
 
 public interface Player extends Entity {
 	/**
-	 * Get the name the player used to log in with.
-	 * @return The player's name
+	 * Get the name the player used when they logged in.
 	 */
 	String getName();
 
 	/**
-	 * Send a chat message to this player.
-	 * @param message The message
+	 * Send a chat message to this player. This may contain basic HTML formatting.
 	 */
 	void sendChat(String message);
 }

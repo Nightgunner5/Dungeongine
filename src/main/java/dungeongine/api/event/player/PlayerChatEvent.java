@@ -8,5 +8,6 @@ import java.util.Set;
 public interface PlayerChatEvent extends PlayerEvent, Cancellable {
 	void setMessage(String message);
 	String getMessage();
+
 	Set<Player> getRecipients();
 }
