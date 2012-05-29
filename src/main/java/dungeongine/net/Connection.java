@@ -29,7 +29,7 @@ public class Connection {
 		packets.put(0x01, Packet01Handshake.class);
 		packets.put(0x02, Packet02Chat.class);
 		packets.put(0x05, Packet05Disconnect.class);
-		packets.put(0x10, Packet10SpellCast.class);
+		packets.put(0x10, Packet10MapData.class);
 	}
 
 	private final List<PacketListener> listeners = new LinkedList<>();

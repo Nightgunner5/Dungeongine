@@ -1,25 +1,22 @@
 package dungeongine.net.packet;
 
+import dungeongine.api.map.Tile;
+import dungeongine.net.NetworkUtils;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-public class Packet10SpellCast implements Packet {
-	private String spell;
-	private long x;
-	private long y;
+public class Packet10MapData implements Packet {
+	private Tile tile;
 
 	@Override
 	public void read(DataInput input) throws IOException {
-		spell = input.readUTF();
-		x = input.readLong();
-		y = input.readLong();
+		tile = NetworkUtils.readTile(input);
 	}
 
 	@Override
 	public void write(DataOutput output) throws IOException {
-		output.writeUTF(spell);
-		output.writeLong(x);
-		output.writeLong(y);
+		NetworkUtils.write(output, tile);
 	}
 }

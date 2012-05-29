@@ -1,6 +1,9 @@
 package dungeongine.net;
 
 import com.google.common.net.InetAddresses;
+import dungeongine.api.map.Location;
+import dungeongine.api.map.Tile;
+import dungeongine.apiimpl.map.TileImpl;
 import dungeongine.client.Client;
 import dungeongine.client.ClientChatListener;
 import dungeongine.net.packet.Packet;
@@ -9,6 +12,9 @@ import dungeongine.server.ServerChatListener;
 import dungeongine.server.ServerHandshakeListener;
 import dungeongine.server.ServerPacketListener;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,6 +50,25 @@ public final class NetworkUtils {
 				.append("', uuid = '")
 				.append(connection.getVar("uuid"))
 				.append("'}").toString();
+	}
+
+	public static void write(DataOutput output, Location location) throws IOException {
+		output.writeUTF(location.getWorldName());
+		output.writeLong(location.getX());
+		output.writeLong(location.getY());
+	}
+
+	public static Location readLocation(DataInput input) throws IOException {
+		return new Location(input.readUTF(), input.readLong(),  input.readLong());
+	}
+
+	public static void write(DataOutput output, Tile tile) throws IOException {
+		write(output, tile.getLocation());
+		output.writeBoolean(tile.isPassable());
+	}
+
+	public static Tile readTile(DataInput input) throws IOException {
+		return new TileImpl(readLocation(input), input.readBoolean());
 	}
 
 	public static void registerServerListeners() {
