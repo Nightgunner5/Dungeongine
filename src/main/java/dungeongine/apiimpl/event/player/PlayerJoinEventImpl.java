@@ -1,18 +1,17 @@
 package dungeongine.apiimpl.event.player;
 
-import dungeongine.api.entity.Player;
+import com.google.common.net.InetAddresses;
 import dungeongine.api.event.player.PlayerJoinEvent;
-import dungeongine.apiimpl.entity.PlayerImpl;
 import dungeongine.net.Connection;
 
 import java.net.InetAddress;
 
-public class PlayerJoinEventImpl implements PlayerJoinEvent {
+public class PlayerJoinEventImpl extends PlayerEventImpl implements PlayerJoinEvent {
 	private final Connection connection;
 	private String message;
-	private boolean cancelled;
 
 	public PlayerJoinEventImpl(Connection connection) {
+		super(connection);
 		this.connection = connection;
 		this.message = String.format("%s connected.", connection.getVar("name"));
 	}
@@ -33,17 +32,7 @@ public class PlayerJoinEventImpl implements PlayerJoinEvent {
 	}
 
 	@Override
-	public void setCancelled(boolean cancelled) {
-		this.cancelled = cancelled;
-	}
-
-	@Override
-	public boolean isCancelled() {
-		return cancelled;
-	}
-
-	@Override
-	public Player getPlayer() {
-		return PlayerImpl.get(connection);
+	public String toString() {
+		return String.format("PlayerJoinEvent {player = %s, address = '%s', message = '%s'}", getPlayer(), InetAddresses.toAddrString(getAddress()), message);
 	}
 }
