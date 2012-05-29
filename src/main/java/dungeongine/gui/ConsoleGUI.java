@@ -9,7 +9,7 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-public class ConsoleGUI extends JTextPane {
+public class ConsoleGUI extends JTextArea {
 	private static final ConsoleGUI _instance = new ConsoleGUI();
 	static final JScrollPane instance = new JScrollPane(_instance, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
@@ -19,8 +19,12 @@ public class ConsoleGUI extends JTextPane {
 		instance.setPreferredSize(new Dimension(-1, 100));
 	}
 
+
 	private ConsoleGUI() {
 		setEditable(false);
+		setBackground(Color.BLACK);
+		setForeground(Color.GREEN);
+		setFont(new Font("Monospaced", Font.PLAIN, 12));
 
 		Logger.getLogger("").addHandler(new Handler() {
 			{

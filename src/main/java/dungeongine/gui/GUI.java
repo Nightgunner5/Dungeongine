@@ -52,13 +52,13 @@ public final class GUI {
 	public static void clientStartup(InetAddress host, String name) {
 		window.remove(StartupGUI.instance);
 		window.add(ClientGUI.instance, BorderLayout.CENTER);
-		if (ClientGUI.connect(host))
+		if (ClientGUI.connect(host)) {
 			ClientGUI.handshake(name);
-		else {
+			window.pack();
+		} else {
 			window.remove(ClientGUI.instance);
 			window.add(StartupGUI.instance, BorderLayout.CENTER);
 			StartupGUI.reenable();
 		}
-		window.pack();
 	}
 }
