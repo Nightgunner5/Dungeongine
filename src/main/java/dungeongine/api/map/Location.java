@@ -16,6 +16,12 @@ public final class Location implements Serializable {
 	private final long x;
 	private final long y;
 
+	/** Creates a location within the specified world with the given coordinates. */
+	public Location(World world, long x, long y) {
+		this(world.getName(), x, y);
+	}
+
+	/** Creates a location within the specified world with the given coordinates. */
 	public Location(String world, long x, long y) {
 		this.world = Preconditions.checkNotNull(world);
 		this.x = x;
