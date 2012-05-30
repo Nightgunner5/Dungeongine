@@ -1,5 +1,6 @@
 package dungeongine.apiimpl.entity;
 
+import com.google.common.base.Objects;
 import dungeongine.api.Events;
 import dungeongine.api.entity.Entity;
 import dungeongine.api.map.Location;
@@ -51,6 +52,7 @@ public class EntityImpl extends StorageImpl implements Entity {
 	}
 
 	protected <T> void dataChanged(String name, T oldValue, T newValue) {
-		Events.dispatch(new EntityDataChangedEventImpl<>(this, name, oldValue, newValue));
+		if (!Objects.equal(oldValue, newValue))
+			Events.dispatch(new EntityDataChangedEventImpl<>(this, name, oldValue, newValue));
 	}
 }

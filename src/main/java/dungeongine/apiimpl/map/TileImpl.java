@@ -1,5 +1,6 @@
 package dungeongine.apiimpl.map;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 import dungeongine.api.Events;
 import dungeongine.api.map.Location;
@@ -63,6 +64,7 @@ public class TileImpl extends StorageImpl implements Tile {
 
 	@Override
 	protected <T> void dataChanged(String name, T oldValue, T newValue) {
-		Events.dispatch(new TileDataChangedEventImpl<>(this, name, oldValue, newValue));
+		if (!Objects.equal(oldValue, newValue))
+			Events.dispatch(new TileDataChangedEventImpl<>(this, name, oldValue, newValue));
 	}
 }

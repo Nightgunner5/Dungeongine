@@ -1,6 +1,7 @@
 package dungeongine.apiimpl;
 
 import com.google.common.base.CharMatcher;
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import dungeongine.api.Events;
@@ -49,7 +50,8 @@ public abstract class StorageImpl {
 	}
 
 	protected <T> void dataChanged(String name, T oldValue, T newValue) {
-		Events.dispatch(new DataChangedEventImpl<>(name, oldValue, newValue));
+		if (!Objects.equal(oldValue, newValue))
+			Events.dispatch(new DataChangedEventImpl<>(name, oldValue, newValue));
 	}
 
 	private static final File SAVE_DIR = new File(System.getProperty("user.home"), ".dungeongine-save");
