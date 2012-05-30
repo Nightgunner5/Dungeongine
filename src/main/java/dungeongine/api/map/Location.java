@@ -22,56 +22,75 @@ public final class Location implements Serializable {
 		this.y = y;
 	}
 
+	/** Gets the name of the world this location exists within. */
 	public String getWorldName() {
 		return world;
 	}
 
+	/** Gets the X coordinate of this location. */
 	public long getX() {
 		return x;
 	}
 
+	/** Gets the Y coordinate of this location. */
 	public long getY() {
 		return y;
 	}
 
-	public Location add(Location other) throws IllegalArgumentException {
+	/** Adds two locations, assuming they belong to the same world. */
+	public Location add(Location other) throws IllegalArgumentException, ArithmeticException {
 		checkWorld(other);
 		return add(other.x, other.y);
 	}
 
-	public Location add(long x, long y) {
+	/** Creates a new location representing a location (x, y) away from this location. */
+	public Location add(long x, long y) throws ArithmeticException {
 		return new Location(world, checkedAdd(this.x, x), checkedAdd(this.y, y));
 	}
 
-	public Location subtract(Location other) throws IllegalArgumentException {
+	/** Subtracts two locations, assuming they belong to the same world. */
+	public Location subtract(Location other) throws IllegalArgumentException, ArithmeticException {
 		checkWorld(other);
 		return subtract(other.x, other.y);
 	}
 
-	public Location subtract(long x, long y) {
+	/** Creates a new location representing a location (-x, -y) away from this location. */
+	public Location subtract(long x, long y) throws ArithmeticException {
 		return new Location(world, checkedSubtract(this.x, x), checkedSubtract(this.y, y));
 	}
 
-	public long distanceSquared(Location other) {
+	/**
+	 * Gets the distance squared between this and another location. This method is faster than distance() because it does
+	 * not compute the square root.
+	 */
+	public long distanceSquared(Location other) throws ArithmeticException {
 		return subtract(other).lengthSquared();
 	}
 
-	public long lengthSquared() {
+	/**
+	 * Gets the distance squared between this and (0, 0). This method is faster than length() because it does not compute
+	 * the square root.
+	 */
+	public long lengthSquared() throws ArithmeticException {
 		return checkedAdd(checkedMultiply(x, x), checkedMultiply(y, y));
 	}
 
-	public long distance(Location other) {
+	/** Gets the distance between this and another location. Fractional values will be rounded half-up. */
+	public long distance(Location other) throws ArithmeticException {
 		return LongMath.sqrt(distanceSquared(other), RoundingMode.HALF_UP);
 	}
 
-	public long length() {
+	/** Gets the distance between this and (0, 0). Fractional values will be rounded half-up. */
+	public long length() throws ArithmeticException {
 		return LongMath.sqrt(lengthSquared(), RoundingMode.HALF_UP);
 	}
 
+	/** Shortcut for <code>Dungeongine.getWorld(location.getWorldName());</code> */
 	public World getWorld() {
 		return Dungeongine.getWorld(world);
 	}
 
+	/** Shortcut for <code>location.getWorld().getTileAt(location);</code> */
 	public Tile getTile() {
 		return getWorld().getTileAt(this);
 	}

@@ -1,5 +1,6 @@
 package dungeongine.api.entity;
 
+/** A currently logged-in player. */
 public interface Player extends Entity {
 	/** Get the name the player used when they logged in. */
 	String getName();
