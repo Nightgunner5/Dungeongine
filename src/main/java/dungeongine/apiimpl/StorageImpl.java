@@ -3,30 +3,32 @@ package dungeongine.apiimpl;
 import com.google.common.base.Objects;
 import com.google.common.collect.MapMaker;
 import com.google.common.collect.Sets;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBObject;
-import com.mongodb.Mongo;
+import com.mongodb.*;
 import de.flapdoodle.embedmongo.MongoDBRuntime;
+import de.flapdoodle.embedmongo.MongodExecutable;
 import de.flapdoodle.embedmongo.MongodProcess;
 import de.flapdoodle.embedmongo.config.MongodConfig;
 import de.flapdoodle.embedmongo.distribution.Version;
 import de.flapdoodle.embedmongo.runtime.Network;
 import dungeongine.Main;
 import dungeongine.api.Events;
+import dungeongine.api.Storage;
 import dungeongine.apiimpl.event.DataChangedEventImpl;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.net.InetAddress;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class StorageImpl {
+public abstract class StorageImpl implements Storage {
 	private final String collection;
 	private final String identifier;
 	private final DBObject query;
 	private final boolean inDB;
 
 	private static final Set<StorageImpl> instances = Sets.newSetFromMap(new MapMaker().weakKeys().<StorageImpl, Boolean>makeMap());
+	private boolean dirty;
 
 	static {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -35,8 +37,11 @@ public abstract class StorageImpl {
 				for (StorageImpl instance : instances) {
 					instance.save();
 				}
-				database.getMongo().close();
-				mongod.stop();
+				try {
+					database.getMongo().getDB("admin").command(new BasicDBObject().append("shutdown", 1));
+				} catch (MongoException.Network ex) {
+					// Expected
+				}
 			}
 		});
 	}
@@ -51,8 +56,10 @@ public abstract class StorageImpl {
 		query = new BasicDBObject().append("identifier", identifier);
 		Map<String, Object> data = getData();
 		inDB = data != null;
-		if (data == null)
+		if (data == null) {
 			data = getDefault();
+			dirty = true;
+		}
 		load(data);
 		instances.add(this);
 	}
@@ -73,8 +80,16 @@ public abstract class StorageImpl {
 	static {
 		MongoDBRuntime runtime = MongoDBRuntime.getDefaultInstance();
 		try {
-			mongod = runtime.prepare(new MongodConfig(Version.V2_0, Main.DB_PORT, Network.localhostIsIPv6(), "dungeongine.sav")).start();
-			Mongo mongo = new Mongo("127.0.0.1", Main.DB_PORT);
+			MongodExecutable executable = runtime.prepare(new MongodConfig(Version.V2_0, Main.DB_PORT, Network.localhostIsIPv6(), "dungeongine.sav"));
+			try {
+				Field field = executable.getClass().getDeclaredField("_stopped");
+				field.setAccessible(true);
+				field.set(executable, true);
+			} catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
+			mongod = executable.start();
+			Mongo mongo = new Mongo(InetAddress.getLoopbackAddress().getHostAddress(), Main.DB_PORT);
 			database = mongo.getDB("dungeongine");
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
@@ -86,15 +101,20 @@ public abstract class StorageImpl {
 		return data == null ? null : data.toMap();
 	}
 
-	protected <T> void dataChanged(String name, T oldValue, T newValue) {
-		if (!Objects.equal(oldValue, newValue))
-			Events.dispatch(new DataChangedEventImpl<>(name, oldValue, newValue));
+	protected final <T> void dataChanged(String name, T oldValue, T newValue) {
+		if (!Objects.equal(oldValue, newValue)) {
+			Events.dispatch(DataChangedEventImpl.getInstance(this, name, oldValue, newValue));
+			dirty = true;
+		}
 	}
 
 	public void save() {
+		if (!dirty)
+			return;
 		database.getCollection(collection).remove(query);
 		BasicDBObject data = new BasicDBObject().append("identifier", identifier);
 		serialize(data);
 		database.getCollection(collection).insert(data);
+		dirty = false;
 	}
 }

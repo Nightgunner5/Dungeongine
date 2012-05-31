@@ -1,6 +1,8 @@
 package dungeongine.api.map;
 
-public interface Tile {
+import dungeongine.api.Storage;
+
+public interface Tile extends Storage {
 	void setPassable(boolean passable);
 
 	boolean isPassable();
