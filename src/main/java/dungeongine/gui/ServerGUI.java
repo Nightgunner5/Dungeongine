@@ -45,6 +45,8 @@ public class ServerGUI extends JPanel {
 		});
 		playersUpdate.setRepeats(true);
 		playersUpdate.start();
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		add(new ServerGraphGUI(), c);
 		setPreferredSize(new Dimension(400, 400));
 	}
 

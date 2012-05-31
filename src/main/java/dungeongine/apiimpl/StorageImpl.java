@@ -15,6 +15,7 @@ import dungeongine.api.Events;
 import dungeongine.api.Storage;
 import dungeongine.apiimpl.event.DataChangedEventImpl;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.InetAddress;
@@ -78,6 +79,12 @@ public abstract class StorageImpl implements Storage {
 	private static final MongodProcess mongod;
 	private static final DB database;
 	static {
+		try {
+			new Mongo(InetAddress.getLoopbackAddress().getHostAddress(), Main.DB_PORT).getDB("admin").command(new BasicDBObject().append("shutdown", 1));
+			new File("dungeongine.sav/mongod.lock").delete();
+		} catch (Exception ex) {
+			// Ignored. This code is only here to clean up non-clean shutdowns.
+		}
 		MongoDBRuntime runtime = MongoDBRuntime.getDefaultInstance();
 		try {
 			MongodExecutable executable = runtime.prepare(new MongodConfig(Version.V2_0, Main.DB_PORT, Network.localhostIsIPv6(), "dungeongine.sav"));
@@ -98,6 +105,10 @@ public abstract class StorageImpl implements Storage {
 
 	private Map<String, Object> getData() {
 		DBObject data = database.getCollection(collection).findOne(query);
+
+		if (statistics != null)
+			statistics.recordLoad(collection);
+
 		return data == null ? null : data.toMap();
 	}
 
@@ -111,10 +122,27 @@ public abstract class StorageImpl implements Storage {
 	public void save() {
 		if (!dirty)
 			return;
+
 		database.getCollection(collection).remove(query);
+
 		BasicDBObject data = new BasicDBObject().append("identifier", identifier);
 		serialize(data);
+
 		database.getCollection(collection).insert(data);
+
 		dirty = false;
+
+		if (statistics != null)
+			statistics.recordSave(collection);
+	}
+
+	private static Statistics statistics;
+	public static void register(Statistics statistics) {
+		StorageImpl.statistics = statistics;
+	}
+
+	public static interface Statistics {
+		void recordSave(String collection);
+		void recordLoad(String collection);
 	}
 }

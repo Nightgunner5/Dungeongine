@@ -1,13 +1,10 @@
 package dungeongine.apiimpl.map;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
-import dungeongine.api.Events;
 import dungeongine.api.map.Location;
 import dungeongine.api.map.Tile;
 import dungeongine.api.map.World;
 import dungeongine.apiimpl.StorageImpl;
-import dungeongine.apiimpl.event.map.TileDataChangedEventImpl;
 
 import java.util.Map;
 
@@ -59,11 +56,5 @@ public class TileImpl extends StorageImpl implements Tile {
 	protected void serialize(Map<String, Object> data) {
 		data.put("location", location);
 		data.put("passable", passable);
-	}
-
-	@Override
-	protected <T> void dataChanged(String name, T oldValue, T newValue) {
-		if (!Objects.equal(oldValue, newValue))
-			Events.dispatch(new TileDataChangedEventImpl<>(this, name, oldValue, newValue));
 	}
 }
