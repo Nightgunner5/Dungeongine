@@ -44,20 +44,20 @@ public class TileImpl extends StorageImpl implements Tile {
 	}
 
 	@Override
-	protected void load(Map<String, Serializable> data) {
+	protected void load(Map<String, Object> data) {
 		this.location = (Location) data.get("location");
 		this.passable = (Boolean) data.get("passable");
 	}
 
 	@Override
-	protected Map<String, Serializable> getDefault() {
-		Map<String, Serializable> data = Maps.newLinkedHashMap();
+	protected Map<String, Object> getDefault() {
+		Map<String, Object> data = Maps.newLinkedHashMap();
 		data.put("passable", Boolean.FALSE);
 		return data;
 	}
 
 	@Override
-	protected void serialize(Map<String, Serializable> data) {
+	protected void serialize(Map<String, Object> data) {
 		data.put("location", location);
 		data.put("passable", passable);
 	}

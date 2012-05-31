@@ -1,7 +1,9 @@
 package dungeongine.apiimpl;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.MapMaker;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.orientechnologies.orient.core.command.OCommandRequest;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -12,13 +14,28 @@ import dungeongine.apiimpl.event.DataChangedEventImpl;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class StorageImpl {
 	private final String identifier;
 
+	private static final Set<StorageImpl> instances = Sets.newSetFromMap(new MapMaker().weakKeys().<StorageImpl, Boolean>makeMap());
+
+	static {
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				for (StorageImpl instance : instances) {
+					instance.save();
+				}
+			}
+		});
+	}
+
 	public StorageImpl(String identifier) {
 		this.identifier = identifier;
 		load(getData());
+		instances.add(this);
 	}
 
 	@Override
@@ -46,7 +63,10 @@ public abstract class StorageImpl {
 
 
 	private Map<String, Object> getData() {
-		ODocument data = query.execute(identifier);
+		ODocument data;
+		synchronized (database) {
+			data = query.execute(identifier);
+		}
 		if (data != null)
 			return convert(data);
 		return getDefault();
@@ -66,14 +86,17 @@ public abstract class StorageImpl {
 	}
 
 	public void save() {
-		ODocument data = query.execute(identifier);
-		if (data == null)
-			data = new ODocument("storage");
-		data.clear();
-		Map<String, Object> serialized = Maps.newLinkedHashMap();
-		serialize(serialized);
-		for (Map.Entry<String, Object> entry : serialized.entrySet()) {
-			data.field(entry.getKey(), entry.getValue() instanceof Map<?, ?> ? convert((Map<String, Object>) entry.getValue()) : entry.getValue());
+		synchronized (database) {
+			ODocument data = query.execute(identifier);
+			if (data == null)
+				data = new ODocument("storage");
+			data.clear();
+			Map<String, Object> serialized = Maps.newLinkedHashMap();
+			serialize(serialized);
+			for (Map.Entry<String, Object> entry : serialized.entrySet()) {
+				data.field(entry.getKey(), entry.getValue() instanceof Map<?, ?> ? convert((Map<String, Object>) entry.getValue()) : entry.getValue());
+			}
+			data.save();
 		}
 	}
 

@@ -7,7 +7,6 @@ import dungeongine.api.map.Location;
 import dungeongine.apiimpl.StorageImpl;
 import dungeongine.apiimpl.event.entity.EntityDataChangedEventImpl;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 
@@ -21,17 +20,17 @@ public class EntityImpl extends StorageImpl implements Entity {
 	}
 
 	@Override
-	protected void load(Map<String, Serializable> data) {
+	protected void load(Map<String, Object> data) {
 		location = (Location) data.get("location");
 	}
 
 	@Override
-	protected Map<String, Serializable> getDefault() {
+	protected Map<String, Object> getDefault() {
 		return Collections.emptyMap();
 	}
 
 	@Override
-	protected void serialize(Map<String, Serializable> data) {
+	protected void serialize(Map<String, Object> data) {
 		data.put("location", location);
 	}
 
