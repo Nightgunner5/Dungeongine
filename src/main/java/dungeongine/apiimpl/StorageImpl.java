@@ -5,6 +5,7 @@ import com.google.common.collect.MapMaker;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.orientechnologies.orient.core.command.OCommandRequest;
+import com.orientechnologies.orient.core.db.ODatabaseComplex;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
@@ -96,7 +97,7 @@ public abstract class StorageImpl {
 			for (Map.Entry<String, Object> entry : serialized.entrySet()) {
 				data.field(entry.getKey(), entry.getValue() instanceof Map<?, ?> ? convert((Map<String, Object>) entry.getValue()) : entry.getValue());
 			}
-			data.save();
+			database.save(data, ODatabaseComplex.OPERATION_MODE.ASYNCHRONOUS_NOANSWER, null);
 		}
 	}
 
