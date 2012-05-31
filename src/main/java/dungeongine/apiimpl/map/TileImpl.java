@@ -9,7 +9,6 @@ import dungeongine.api.map.World;
 import dungeongine.apiimpl.StorageImpl;
 import dungeongine.apiimpl.event.map.TileDataChangedEventImpl;
 
-import java.io.Serializable;
 import java.util.Map;
 
 public class TileImpl extends StorageImpl implements Tile {
@@ -17,7 +16,7 @@ public class TileImpl extends StorageImpl implements Tile {
 	private boolean passable;
 
 	public TileImpl(Location location, boolean passable) {
-		super(String.format("tile-%s-%s-%s", location.getWorldName(), Long.toHexString(location.getX()), Long.toHexString(location.getY())));
+		super("tile", String.format("%s-%s-%s", location.getWorldName(), Long.toHexString(location.getX()), Long.toHexString(location.getY())));
 		this.location = location;
 		this.passable = passable;
 	}

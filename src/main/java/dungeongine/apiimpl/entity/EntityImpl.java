@@ -15,7 +15,7 @@ public class EntityImpl extends StorageImpl implements Entity {
 	private Location location;
 
 	public EntityImpl(String id) {
-		super("ent-" + id);
+		super("entity", id);
 		this.id = id;
 	}
 

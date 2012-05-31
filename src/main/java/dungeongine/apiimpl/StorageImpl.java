@@ -2,23 +2,29 @@ package dungeongine.apiimpl;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.MapMaker;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.orientechnologies.orient.core.command.OCommandRequest;
-import com.orientechnologies.orient.core.db.ODatabaseComplex;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
+import de.flapdoodle.embedmongo.MongoDBRuntime;
+import de.flapdoodle.embedmongo.MongodProcess;
+import de.flapdoodle.embedmongo.config.MongodConfig;
+import de.flapdoodle.embedmongo.distribution.Version;
+import de.flapdoodle.embedmongo.runtime.Network;
+import dungeongine.Main;
 import dungeongine.api.Events;
 import dungeongine.apiimpl.event.DataChangedEventImpl;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
 public abstract class StorageImpl {
+	private final String collection;
 	private final String identifier;
+	private final DBObject query;
+	private final boolean inDB;
 
 	private static final Set<StorageImpl> instances = Sets.newSetFromMap(new MapMaker().weakKeys().<StorageImpl, Boolean>makeMap());
 
@@ -29,13 +35,25 @@ public abstract class StorageImpl {
 				for (StorageImpl instance : instances) {
 					instance.save();
 				}
+				database.getMongo().close();
+				mongod.stop();
 			}
 		});
 	}
 
-	public StorageImpl(String identifier) {
+	public static void init() {
+		// Yay for <clinit>
+	}
+
+	public StorageImpl(String collection, String identifier) {
+		this.collection = collection;
 		this.identifier = identifier;
-		load(getData());
+		query = new BasicDBObject().append("identifier", identifier);
+		Map<String, Object> data = getData();
+		inDB = data != null;
+		if (data == null)
+			data = getDefault();
+		load(data);
 		instances.add(this);
 	}
 
@@ -50,35 +68,22 @@ public abstract class StorageImpl {
 
 	protected abstract void serialize(Map<String, Object> data);
 
-	private static final ODatabaseDocumentTx database;
-
+	private static final MongodProcess mongod;
+	private static final DB database;
 	static {
+		MongoDBRuntime runtime = MongoDBRuntime.getDefaultInstance();
 		try {
-			database = new ODatabaseDocumentTx("local:" + new File("dungeongine.sav").getCanonicalPath());
+			mongod = runtime.prepare(new MongodConfig(Version.V2_0, Main.DB_PORT, Network.localhostIsIPv6(), "dungeongine.sav")).start();
+			Mongo mongo = new Mongo("127.0.0.1", Main.DB_PORT);
+			database = mongo.getDB("dungeongine");
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
 	}
 
-	private static final OCommandRequest query = database.command(new OSQLSynchQuery<ODocument>("SELECT * FROM storage WHERE identifier = ?"));
-
-
 	private Map<String, Object> getData() {
-		ODocument data;
-		synchronized (database) {
-			data = query.execute(identifier);
-		}
-		if (data != null)
-			return convert(data);
-		return getDefault();
-	}
-
-	private Map<String, Object> convert(ODocument data) {
-		Map<String, Object> map = Maps.newLinkedHashMap();
-		for (Map.Entry<String, Object> entry : data) {
-			map.put(entry.getKey(), entry.getValue() instanceof ODocument ? convert((ODocument) entry.getValue()) : entry.getValue());
-		}
-		return map;
+		DBObject data = database.getCollection(collection).findOne(query);
+		return data == null ? null : data.toMap();
 	}
 
 	protected <T> void dataChanged(String name, T oldValue, T newValue) {
@@ -87,25 +92,9 @@ public abstract class StorageImpl {
 	}
 
 	public void save() {
-		synchronized (database) {
-			ODocument data = query.execute(identifier);
-			if (data == null)
-				data = new ODocument("storage");
-			data.clear();
-			Map<String, Object> serialized = Maps.newLinkedHashMap();
-			serialize(serialized);
-			for (Map.Entry<String, Object> entry : serialized.entrySet()) {
-				data.field(entry.getKey(), entry.getValue() instanceof Map<?, ?> ? convert((Map<String, Object>) entry.getValue()) : entry.getValue());
-			}
-			database.save(data, ODatabaseComplex.OPERATION_MODE.ASYNCHRONOUS_NOANSWER, null);
-		}
-	}
-
-	private ODocument convert(Map<String, Object> map) {
-		ODocument data = new ODocument();
-		for (Map.Entry<String, Object> entry : map.entrySet()) {
-			data.field(entry.getKey(), entry.getValue() instanceof Map<?, ?> ? convert((Map<String, Object>) entry.getValue()) : entry.getValue());
-		}
-		return data;
+		database.getCollection(collection).remove(query);
+		BasicDBObject data = new BasicDBObject().append("identifier", identifier);
+		serialize(data);
+		database.getCollection(collection).insert(data);
 	}
 }

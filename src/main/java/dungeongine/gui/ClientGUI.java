@@ -1,5 +1,6 @@
 package dungeongine.gui;
 
+import dungeongine.apiimpl.StorageImpl;
 import dungeongine.client.Client;
 import dungeongine.net.NetworkUtils;
 import dungeongine.net.packet.Packet01Handshake;
@@ -14,6 +15,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Collections;
+import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -89,7 +93,34 @@ public class ClientGUI extends JPanel {
 
 	public static void handshake(String name) {
 		Logger.getLogger(ClientGUI.class.getName()).info("Logging in as '" + name.trim() + "'...");
-		Client.send(new Packet01Handshake(name));
+		Client.send(new Packet01Handshake(name, new ClientUUID(name).getUuid()));
 		instance.chatInput.setEditable(true);
+	}
+
+	private static class ClientUUID extends StorageImpl {
+		private String uuid;
+
+		public ClientUUID(String name) {
+			super("clientuuid", name);
+		}
+
+		@Override
+		protected void load(Map<String, Object> data) {
+			uuid = (String) data.get("uuid");
+		}
+
+		@Override
+		protected Map<String, Object> getDefault() {
+			return Collections.singletonMap("uuid", (Object) UUID.randomUUID().toString());
+		}
+
+		@Override
+		protected void serialize(Map<String, Object> data) {
+			data.put("uuid", uuid);
+		}
+
+		public String getUuid() {
+			return uuid;
+		}
 	}
 }

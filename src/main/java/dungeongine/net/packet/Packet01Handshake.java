@@ -16,8 +16,12 @@ public class Packet01Handshake implements Packet {
 	}
 
 	public Packet01Handshake(String playerName) {
+		this(playerName, UUID.randomUUID().toString());
+	}
+
+	public Packet01Handshake(String playerName, String uuid) {
 		this.version = Connection.NETWORK_VERSION;
-		this.uuid = UUID.randomUUID().toString();
+		this.uuid = uuid;
 		this.playerName = playerName;
 	}
 
