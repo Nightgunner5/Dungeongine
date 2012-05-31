@@ -1,5 +1,6 @@
 package dungeongine.api;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import dungeongine.api.map.World;
 import dungeongine.apiimpl.ServerImpl;
@@ -14,14 +15,20 @@ public final class Dungeongine {
 
 	private static final Server server = new ServerImpl();
 
+	/** Gets the server instance. */
 	public static Server getServer() {
 		return server;
 	}
 
+	/**
+	 * Shortcut for {@link dungeongine.api.Dungeongine#getServer()}.{@link dungeongine.api.Server#getWorld(String)
+	 * getWorld(String)}.
+	 */
 	public static World getWorld(String name) {
 		return server.getWorld(name);
 	}
 
+	/** Shortcut for {@link dungeongine.api.Dungeongine.Ticker#getTick()}. */
 	public static long getTick() {
 		return Ticker.getTick();
 	}
@@ -50,8 +57,9 @@ public final class Dungeongine {
 			});
 		}
 
-		private static final LinkedList<Long> ticks = new LinkedList<>();
+		private static final LinkedList<Long> ticks = Lists.newLinkedList();
 		private static final List<Long> ticksRead = Collections.unmodifiableList(ticks);
+
 		private static synchronized void recordTick(long tick) {
 			if (ticks.size() > MAX_LENGTH)
 				ticks.removeFirst();
@@ -74,6 +82,7 @@ public final class Dungeongine {
 		private static final Map<String, Long> totalSavesRead = Collections.unmodifiableMap(totalSaves);
 		private static final Map<String, Long> lastSaves = Maps.newHashMap();
 		private static final Map<String, Long> lastSavesRead = Collections.unmodifiableMap(lastSaves);
+
 		private static synchronized void recordSave(String collection) {
 			totalSaves.put(collection, totalSaves.containsKey(collection) ? 1 + totalSaves.get(collection) : 1);
 			lastSaves.put(collection, lastSaves.containsKey(collection) ? 1 + lastSaves.get(collection) : 1);
@@ -89,6 +98,7 @@ public final class Dungeongine {
 		private static final Map<String, Long> totalLoadsRead = Collections.unmodifiableMap(totalLoads);
 		private static final Map<String, Long> lastLoads = Maps.newHashMap();
 		private static final Map<String, Long> lastLoadsRead = Collections.unmodifiableMap(lastLoads);
+
 		private static synchronized void recordLoad(String collection) {
 			totalLoads.put(collection, totalLoads.containsKey(collection) ? 1 + totalLoads.get(collection) : 1);
 			lastLoads.put(collection, lastLoads.containsKey(collection) ? 1 + lastLoads.get(collection) : 1);
@@ -133,13 +143,46 @@ public final class Dungeongine {
 			}.start();
 		}
 
+		private static final LinkedList<List<Runnable>> scheduledTicks = Lists.newLinkedList();
+
 		private static void doTick() {
-			try {
-				Thread.sleep(new Random().nextInt(20));
-			} catch (InterruptedException ex) {
+			List<Runnable> ticks = Collections.emptyList();
+			synchronized (scheduledTicks) {
+				if (!scheduledTicks.isEmpty()) {
+					ticks = scheduledTicks.removeFirst();
+				}
+			}
+			for (Runnable scheduled : ticks) {
+				long start = System.currentTimeMillis();
+				scheduled.run();
+				long time = System.currentTimeMillis() - start;
+				if (time > 5) {
+					Logger.getLogger(Ticker.class.getName()).warning(String.format("%s tick took %dms!", scheduled, time));
+				}
 			}
 		}
 
+		/** Schedules a {@link Runnable} to be {@link Runnable#run() run} on the next tick. */
+		public static void scheduleTick(Runnable scheduled) {
+			scheduleTick(scheduled, 1);
+		}
+
+		/**
+		 * Schedules a {@link Runnable} to be {@link Runnable#run() run} in a given amount of ticks. The number of ticks must
+		 * be between 1 and 5000 inclusive.
+		 */
+		public static void scheduleTick(Runnable scheduled, long ticks) {
+			if (ticks < 1 || ticks > 5000)
+				throw new IndexOutOfBoundsException();
+			synchronized (scheduledTicks) {
+				while (scheduledTicks.size() < ticks) {
+					scheduledTicks.add(new ArrayList<Runnable>());
+				}
+				scheduledTicks.get((int) (ticks - 1)).add(scheduled);
+			}
+		}
+
+		/** Gets the current tick number. */
 		public static long getTick() {
 			return tick;
 		}
