@@ -1,10 +1,10 @@
 package dungeongine.apiimpl.entity;
 
+import com.google.common.collect.Maps;
 import dungeongine.api.entity.Entity;
 import dungeongine.api.map.Location;
 import dungeongine.apiimpl.StorageImpl;
 
-import java.util.Collections;
 import java.util.Map;
 
 public class EntityImpl extends StorageImpl implements Entity {
@@ -23,7 +23,7 @@ public class EntityImpl extends StorageImpl implements Entity {
 
 	@Override
 	protected Map<String, Object> getDefault() {
-		return Collections.emptyMap();
+		return Maps.newLinkedHashMap();
 	}
 
 	@Override
