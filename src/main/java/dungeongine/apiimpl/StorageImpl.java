@@ -44,11 +44,16 @@ public abstract class StorageImpl implements Storage {
 	}
 
 	public StorageImpl(String collection, String identifier) {
+		this(collection, identifier, false);
+	}
+	public StorageImpl(String collection, String identifier, boolean requireExists) {
 		this.collection = collection;
 		this.identifier = identifier;
 		query = new BasicDBObject().append("identifier", identifier);
 		Map<String, Object> data = getData();
 		if (data == null) {
+			if (requireExists)
+				throw new IllegalArgumentException(String.format("%s '%s' does not exist.", collection, identifier));
 			data = getDefault();
 			dirty = true;
 		}
@@ -67,7 +72,7 @@ public abstract class StorageImpl implements Storage {
 
 	protected abstract void serialize(Map<String, Object> data);
 
-	private static final DB database;
+	public static final DB database;
 
 	static {
 		Database.startup();
