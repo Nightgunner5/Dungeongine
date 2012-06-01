@@ -1,7 +1,7 @@
-package dungeongine.net.packet;
+package dungeongine.bootstrap.net.packet;
 
 import dungeongine.api.map.Tile;
-import dungeongine.net.NetworkUtils;
+import dungeongine.bootstrap.net.NetworkUtils;
 
 import java.io.DataInput;
 import java.io.DataOutput;

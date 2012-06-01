@@ -4,7 +4,7 @@ import dungeongine.api.entity.Player;
 import dungeongine.api.event.Cancellable;
 import dungeongine.api.event.player.PlayerEvent;
 import dungeongine.apiimpl.entity.PlayerImpl;
-import dungeongine.net.Connection;
+import dungeongine.bootstrap.net.Connection;
 
 public class PlayerEventImpl implements PlayerEvent, Cancellable {
 	private final Connection connection;

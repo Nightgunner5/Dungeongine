@@ -1,12 +1,12 @@
-package dungeongine.server;
+package dungeongine.bootstrap.server;
 
 import com.google.common.collect.Maps;
 import dungeongine.Main;
 import dungeongine.api.Dungeongine;
 import dungeongine.api.Events;
-import dungeongine.net.Connection;
-import dungeongine.net.packet.Packet;
-import dungeongine.net.packet.PacketListener;
+import dungeongine.bootstrap.net.Connection;
+import dungeongine.bootstrap.net.packet.Packet;
+import dungeongine.bootstrap.net.packet.PacketListener;
 
 import java.io.IOException;
 import java.net.ServerSocket;

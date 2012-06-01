@@ -23,7 +23,6 @@ public abstract class StorageImpl implements Storage {
 	private final String collection;
 	private final String identifier;
 	private final DBObject query;
-	private final boolean inDB;
 
 	private static final Set<StorageImpl> instances = Sets.newSetFromMap(new MapMaker().weakKeys().<StorageImpl, Boolean>makeMap());
 	private boolean dirty;
@@ -49,7 +48,6 @@ public abstract class StorageImpl implements Storage {
 		this.identifier = identifier;
 		query = new BasicDBObject().append("identifier", identifier);
 		Map<String, Object> data = getData();
-		inDB = data != null;
 		if (data == null) {
 			data = getDefault();
 			dirty = true;

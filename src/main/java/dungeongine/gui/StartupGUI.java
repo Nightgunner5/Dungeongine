@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -89,7 +90,7 @@ public class StartupGUI extends JPanel {
 								}
 							});
 						}
-					} catch (Exception ex) {
+					} catch (RuntimeException | InterruptedException | InvocationTargetException ex) {
 						return;
 					}
 				}

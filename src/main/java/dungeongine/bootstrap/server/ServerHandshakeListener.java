@@ -1,14 +1,14 @@
-package dungeongine.server;
+package dungeongine.bootstrap.server;
 
 import com.google.common.base.Strings;
 import dungeongine.api.Events;
 import dungeongine.api.event.player.PlayerJoinEvent;
 import dungeongine.apiimpl.event.player.PlayerJoinEventImpl;
-import dungeongine.net.Connection;
-import dungeongine.net.packet.Packet;
-import dungeongine.net.packet.Packet01Handshake;
-import dungeongine.net.packet.Packet02Chat;
-import dungeongine.net.packet.PacketListener;
+import dungeongine.bootstrap.net.Connection;
+import dungeongine.bootstrap.net.packet.Packet;
+import dungeongine.bootstrap.net.packet.Packet01Handshake;
+import dungeongine.bootstrap.net.packet.Packet02Chat;
+import dungeongine.bootstrap.net.packet.PacketListener;
 
 import java.util.UUID;
 

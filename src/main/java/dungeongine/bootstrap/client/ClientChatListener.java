@@ -1,9 +1,9 @@
-package dungeongine.client;
+package dungeongine.bootstrap.client;
 
-import dungeongine.net.Connection;
-import dungeongine.net.packet.Packet;
-import dungeongine.net.packet.Packet02Chat;
-import dungeongine.net.packet.PacketListener;
+import dungeongine.bootstrap.net.Connection;
+import dungeongine.bootstrap.net.packet.Packet;
+import dungeongine.bootstrap.net.packet.Packet02Chat;
+import dungeongine.bootstrap.net.packet.PacketListener;
 
 public class ClientChatListener implements PacketListener {
 	@Override

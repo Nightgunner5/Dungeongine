@@ -3,8 +3,8 @@ package dungeongine.apiimpl.event.player;
 import dungeongine.api.entity.Player;
 import dungeongine.api.event.player.PlayerChatEvent;
 import dungeongine.apiimpl.entity.PlayerImpl;
-import dungeongine.net.Connection;
-import dungeongine.server.Server;
+import dungeongine.bootstrap.net.Connection;
+import dungeongine.bootstrap.server.Server;
 
 import java.util.LinkedHashSet;
 import java.util.Set;

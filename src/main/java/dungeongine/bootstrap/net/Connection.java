@@ -1,4 +1,4 @@
-package dungeongine.net;
+package dungeongine.bootstrap.net;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
@@ -8,8 +8,8 @@ import dungeongine.api.Dungeongine;
 import dungeongine.api.Events;
 import dungeongine.api.event.player.PlayerLeaveEvent;
 import dungeongine.apiimpl.event.player.PlayerLeaveEventImpl;
-import dungeongine.net.packet.*;
-import dungeongine.server.Server;
+import dungeongine.bootstrap.net.packet.*;
+import dungeongine.bootstrap.server.Server;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

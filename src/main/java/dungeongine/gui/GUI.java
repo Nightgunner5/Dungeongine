@@ -1,7 +1,7 @@
 package dungeongine.gui;
 
-import dungeongine.net.NetworkUtils;
-import dungeongine.server.Server;
+import dungeongine.bootstrap.net.NetworkUtils;
+import dungeongine.bootstrap.server.Server;
 
 import javax.swing.*;
 import java.awt.*;

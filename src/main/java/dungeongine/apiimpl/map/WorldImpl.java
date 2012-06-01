@@ -17,7 +17,6 @@ import dungeongine.api.map.World;
 import dungeongine.apiimpl.StorageImpl;
 import dungeongine.apiimpl.entity.EntityImpl;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 public class WorldImpl extends StorageImpl implements World {
@@ -60,18 +59,18 @@ public class WorldImpl extends StorageImpl implements World {
 	public Player[] getPlayers() {
 		Collection<Player> players = Collections2.filter(Arrays.asList(Dungeongine.getServer().getOnlinePlayers()), new Predicate<Player>() {
 			@Override
-			public boolean apply(@Nullable Player input) {
+			public boolean apply(Player input) {
 				return input.getLocation().getWorldName().equals(name);
 			}
 		});
 		return players.toArray(new Player[players.size()]);
 	}
 
-	private Collection<Entity> entities = Lists.newArrayList();
+	private Collection<Entity> entities;
 
 	@Override
 	protected void load(Map<String, Object> data) {
-		entities.clear();
+		entities = Lists.newArrayList();
 		for (String ent : (List<String>) data.get("entities"))
 			entities.add(new EntityImpl(ent));
 	}

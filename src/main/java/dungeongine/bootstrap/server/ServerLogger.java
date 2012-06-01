@@ -1,4 +1,4 @@
-package dungeongine.server;
+package dungeongine.bootstrap.server;
 
 import dungeongine.api.event.EventHandler;
 import dungeongine.api.event.EventListener;

@@ -1,6 +1,6 @@
-package dungeongine.net.packet;
+package dungeongine.bootstrap.net.packet;
 
-import dungeongine.net.Connection;
+import dungeongine.bootstrap.net.Connection;
 
 public interface PacketListener {
 	/**

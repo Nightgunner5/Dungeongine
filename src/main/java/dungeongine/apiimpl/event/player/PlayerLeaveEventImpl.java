@@ -1,7 +1,7 @@
 package dungeongine.apiimpl.event.player;
 
 import dungeongine.api.event.player.PlayerLeaveEvent;
-import dungeongine.net.Connection;
+import dungeongine.bootstrap.net.Connection;
 
 public class PlayerLeaveEventImpl extends PlayerEventImpl implements PlayerLeaveEvent {
 	private String message;

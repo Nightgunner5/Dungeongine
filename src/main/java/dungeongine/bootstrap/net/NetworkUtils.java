@@ -1,16 +1,16 @@
-package dungeongine.net;
+package dungeongine.bootstrap.net;
 
 import com.google.common.net.InetAddresses;
 import dungeongine.api.map.Location;
 import dungeongine.api.map.Tile;
 import dungeongine.apiimpl.map.RemoteTileImpl;
-import dungeongine.client.Client;
-import dungeongine.client.ClientChatListener;
-import dungeongine.net.packet.Packet;
-import dungeongine.server.Server;
-import dungeongine.server.ServerChatListener;
-import dungeongine.server.ServerHandshakeListener;
-import dungeongine.server.ServerPacketListener;
+import dungeongine.bootstrap.client.Client;
+import dungeongine.bootstrap.client.ClientChatListener;
+import dungeongine.bootstrap.net.packet.Packet;
+import dungeongine.bootstrap.server.Server;
+import dungeongine.bootstrap.server.ServerChatListener;
+import dungeongine.bootstrap.server.ServerHandshakeListener;
+import dungeongine.bootstrap.server.ServerPacketListener;
 
 import java.io.DataInput;
 import java.io.DataOutput;

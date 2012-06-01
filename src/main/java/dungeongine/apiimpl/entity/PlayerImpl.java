@@ -4,8 +4,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import dungeongine.api.entity.Player;
-import dungeongine.net.Connection;
-import dungeongine.net.packet.Packet02Chat;
+import dungeongine.bootstrap.net.Connection;
+import dungeongine.bootstrap.net.packet.Packet02Chat;
 
 public class PlayerImpl extends EntityImpl implements Player {
 	private final Connection connection;

@@ -1,9 +1,9 @@
-package dungeongine.server;
+package dungeongine.bootstrap.server;
 
-import dungeongine.net.Connection;
-import dungeongine.net.packet.Packet;
-import dungeongine.net.packet.Packet01Handshake;
-import dungeongine.net.packet.PacketListener;
+import dungeongine.bootstrap.net.Connection;
+import dungeongine.bootstrap.net.packet.Packet;
+import dungeongine.bootstrap.net.packet.Packet01Handshake;
+import dungeongine.bootstrap.net.packet.PacketListener;
 
 public final class ServerPacketListener implements PacketListener {
 	private final PacketListener listener;

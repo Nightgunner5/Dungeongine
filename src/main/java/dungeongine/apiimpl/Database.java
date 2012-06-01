@@ -14,6 +14,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.Enumeration;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -55,10 +56,12 @@ final class Database {
 		try {
 			new Mongo(InetAddress.getLoopbackAddress().getHostAddress(), Main.DB_PORT).getDB("admin").command(new BasicDBObject().append("shutdown", 1));
 			return true;
-		} catch (Exception ex) {
+		} catch (RuntimeException | IOException ex) {
 			return false;
 		} finally {
-			new File("dungeongine.sav", "mongod.lock").delete();
+			File lock = new File("dungeongine.sav", "mongod.lock");
+			if (lock.exists() && !lock.delete())
+				Logger.getLogger(Database.class.getName()).warning("Unable to remove mongodb lock.");
 		}
 	}
 
@@ -79,13 +82,17 @@ final class Database {
 	private static void maybeDownload() throws IOException {
 		File archive = new File("dungeongine.sav", new File(detectURL()).getName());
 		if (!archive.exists()) {
-			archive.getParentFile().mkdirs();
+			if (!archive.getParentFile().isDirectory() && !archive.getParentFile().mkdirs())
+				Logger.getLogger(Database.class.getName()).warning("Could not make database folder.");
 			URL url = new URL(detectURL());
 			ReadableByteChannel in = Channels.newChannel(url.openStream());
 			FileChannel out = new FileOutputStream(archive).getChannel();
-			out.transferFrom(in, 0, 1L << 48L);
-			in.close();
-			out.close();
+			try {
+				out.transferFrom(in, 0, 1L << 48L);
+			} finally {
+				in.close();
+				out.close();
+			}
 		}
 		if (archive.getName().endsWith(".tgz")) {
 			try {
@@ -93,21 +100,30 @@ final class Database {
 			} catch (InterruptedException ex) {
 				throw new RuntimeException(ex);
 			}
-			new File(new File("dungeongine.sav", archive.getName().replace(".tgz", "")), "bin").renameTo(new File("dungeongine.sav/bin"));
+			if (!new File("dungeongine.sav", "bin").exists() && !new File(new File("dungeongine.sav", archive.getName().replace(".tgz", "")), "bin").renameTo(new File("dungeongine.sav", "bin")))
+				Logger.getLogger(Database.class.getName()).warning("Could not create database executable.");
 			new File("dungeongine.sav/bin/mongod").setExecutable(true);
 		} else {
-			new File("dungeongine.sav/bin").mkdirs();
+			if (!new File("dungeongine.sav", "bin").isDirectory() && !new File("dungeongine.sav", "bin").mkdirs())
+				Logger.getLogger(Database.class.getName()).warning("Could not create database executable.");
 			ZipFile file = new ZipFile(archive);
-			Enumeration<? extends ZipEntry> entries = file.entries();
-			for (ZipEntry entry; entries.hasMoreElements(); ) {
-				entry = entries.nextElement();
-				if (entry.getName().replace(archive.getName().replace(".zip", ""), "").substring(1).startsWith("bin")) {
-					ReadableByteChannel in = Channels.newChannel(file.getInputStream(entry));
-					FileChannel out = new FileOutputStream(new File("dungeongine.sav/bin", new File(entry.getName()).getName())).getChannel();
-					out.transferFrom(in, 0, 1L << 48L);
-					in.close();
-					out.close();
+			try {
+				Enumeration<? extends ZipEntry> entries = file.entries();
+				for (ZipEntry entry; entries.hasMoreElements(); ) {
+					entry = entries.nextElement();
+					if (entry.getName().replace(archive.getName().replace(".zip", ""), "").substring(1).startsWith("bin")) {
+						ReadableByteChannel in = Channels.newChannel(file.getInputStream(entry));
+						FileChannel out = new FileOutputStream(new File("dungeongine.sav/bin", new File(entry.getName()).getName())).getChannel();
+						try {
+							out.transferFrom(in, 0, 1L << 48L);
+						} finally {
+							in.close();
+							out.close();
+						}
+					}
 				}
+			} finally {
+				file.close();
 			}
 		}
 	}

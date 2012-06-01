@@ -1,13 +1,13 @@
-package dungeongine.server;
+package dungeongine.bootstrap.server;
 
 import dungeongine.api.Events;
 import dungeongine.api.entity.Player;
 import dungeongine.api.event.player.PlayerChatEvent;
 import dungeongine.apiimpl.event.player.PlayerChatEventImpl;
-import dungeongine.net.Connection;
-import dungeongine.net.packet.Packet;
-import dungeongine.net.packet.Packet02Chat;
-import dungeongine.net.packet.PacketListener;
+import dungeongine.bootstrap.net.Connection;
+import dungeongine.bootstrap.net.packet.Packet;
+import dungeongine.bootstrap.net.packet.Packet02Chat;
+import dungeongine.bootstrap.net.packet.PacketListener;
 
 public class ServerChatListener implements PacketListener {
 	@Override

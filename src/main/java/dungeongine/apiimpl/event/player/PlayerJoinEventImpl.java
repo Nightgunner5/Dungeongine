@@ -2,7 +2,7 @@ package dungeongine.apiimpl.event.player;
 
 import com.google.common.net.InetAddresses;
 import dungeongine.api.event.player.PlayerJoinEvent;
-import dungeongine.net.Connection;
+import dungeongine.bootstrap.net.Connection;
 
 import java.net.InetAddress;
 

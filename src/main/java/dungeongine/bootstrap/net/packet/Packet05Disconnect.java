@@ -1,4 +1,4 @@
-package dungeongine.net.packet;
+package dungeongine.bootstrap.net.packet;
 
 import java.io.DataInput;
 import java.io.DataOutput;

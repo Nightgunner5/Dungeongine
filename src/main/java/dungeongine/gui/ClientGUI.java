@@ -1,10 +1,10 @@
 package dungeongine.gui;
 
 import dungeongine.apiimpl.StorageImpl;
-import dungeongine.client.Client;
-import dungeongine.net.NetworkUtils;
-import dungeongine.net.packet.Packet01Handshake;
-import dungeongine.net.packet.Packet02Chat;
+import dungeongine.bootstrap.client.Client;
+import dungeongine.bootstrap.net.NetworkUtils;
+import dungeongine.bootstrap.net.packet.Packet01Handshake;
+import dungeongine.bootstrap.net.packet.Packet02Chat;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
