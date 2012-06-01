@@ -1,7 +1,7 @@
 package dungeongine.api.entity;
 
-import dungeongine.api.map.Location;
 import dungeongine.api.Storage;
+import dungeongine.api.map.Location;
 
 /**
  * Entities are things such as players, NPCs, and resource nodes. Anything that can be interacted with in any way is an

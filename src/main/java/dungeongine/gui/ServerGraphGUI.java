@@ -29,26 +29,26 @@ public class ServerGraphGUI extends JComponent {
 			x = 0;
 			for (Map.Entry<String, Long> collection : Dungeongine.Statistics.getSaves(true).entrySet()) {
 				g.setColor(new Color(collection.getKey().hashCode()));
-				g.fillRect(x, 150, collection.getValue().intValue(), 10);
-				x += collection.getValue().intValue();
+				g.fillRect(x, 150, collection.getValue().intValue() * 5, 10);
+				x += collection.getValue().intValue() * 5;
 			}
 			x = 0;
 			for (Map.Entry<String, Long> collection : Dungeongine.Statistics.getSaves(false).entrySet()) {
 				g.setColor(new Color(collection.getKey().hashCode()));
-				g.fillRect(x, 160, collection.getValue().intValue() / 5, 10);
-				x += collection.getValue().intValue() / 5;
+				g.fillRect(x, 160, collection.getValue().intValue(), 10);
+				x += collection.getValue().intValue();
 			}
 			x = 0;
 			for (Map.Entry<String, Long> collection : Dungeongine.Statistics.getLoads(true).entrySet()) {
 				g.setColor(new Color(collection.getKey().hashCode()));
-				g.fillRect(x, 175, collection.getValue().intValue(), 10);
-				x += collection.getValue().intValue();
+				g.fillRect(x, 175, collection.getValue().intValue() * 5, 10);
+				x += collection.getValue().intValue() * 5;
 			}
 			x = 0;
 			for (Map.Entry<String, Long> collection : Dungeongine.Statistics.getLoads(false).entrySet()) {
 				g.setColor(new Color(collection.getKey().hashCode()));
-				g.fillRect(x, 185, collection.getValue().intValue() / 5, 10);
-				x += collection.getValue().intValue() / 5;
+				g.fillRect(x, 185, collection.getValue().intValue(), 10);
+				x += collection.getValue().intValue();
 			}
 		} catch (ConcurrentModificationException | NullPointerException ex) {
 			// Instead of synchronizing, it's probably better to just drop the frame.

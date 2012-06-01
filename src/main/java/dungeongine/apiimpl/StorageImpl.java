@@ -8,6 +8,7 @@ import com.mongodb.DB;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import dungeongine.Main;
+import dungeongine.api.Dungeongine;
 import dungeongine.api.Events;
 import dungeongine.api.Storage;
 import dungeongine.apiimpl.event.DataChangedEventImpl;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 public abstract class StorageImpl implements Storage {
 	private final String collection;
@@ -68,6 +70,7 @@ public abstract class StorageImpl implements Storage {
 	protected abstract void serialize(Map<String, Object> data);
 
 	private static final DB database;
+
 	static {
 		Database.startup();
 		try {
@@ -83,6 +86,8 @@ public abstract class StorageImpl implements Storage {
 
 		if (statistics != null)
 			statistics.recordLoad(collection);
+		else
+			Logger.getLogger(StorageImpl.class.getName()).warning("Statistics not registered");
 
 		return data == null ? null : data.toMap();
 	}
@@ -109,15 +114,24 @@ public abstract class StorageImpl implements Storage {
 
 		if (statistics != null)
 			statistics.recordSave(collection);
+		else
+			Logger.getLogger(StorageImpl.class.getName()).warning("Statistics not registered");
 	}
 
 	private static Statistics statistics;
+
 	public static void register(Statistics statistics) {
 		StorageImpl.statistics = statistics;
 	}
 
+	static {
+		// Register it
+		Dungeongine.Statistics.getSaves(true);
+	}
+
 	public static interface Statistics {
 		void recordSave(String collection);
+
 		void recordLoad(String collection);
 	}
 }

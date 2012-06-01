@@ -47,12 +47,12 @@ public final class Dungeongine {
 			StorageImpl.register(new StorageImpl.Statistics() {
 				@Override
 				public void recordSave(String collection) {
-					Statistics.recordSave(collection);
+					Dungeongine.Statistics.recordSave(collection);
 				}
 
 				@Override
 				public void recordLoad(String collection) {
-					Statistics.recordLoad(collection);
+					Dungeongine.Statistics.recordLoad(collection);
 				}
 			});
 		}

@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
@@ -21,7 +22,8 @@ final class Database {
 	}
 
 	static void startup() {
-		shutdown();
+		if (!ownProcess)
+			return;
 		try {
 			maybeDownload();
 			Runtime.getRuntime().exec(new String[]{File.separatorChar == '/' ? new File("dungeongine.sav/bin", "mongod").getAbsolutePath() : new File("dungeongine.sav/bin", "mongod.exe").getAbsolutePath(),
@@ -34,14 +36,29 @@ final class Database {
 		}
 	}
 
+	private static final boolean ownProcess;
+
+	static {
+		boolean own;
+		try {
+			new Socket(InetAddress.getLoopbackAddress(), Main.DB_PORT).close();
+			own = false;
+		} catch (IOException ex) {
+			own = true;
+		}
+		ownProcess = own;
+	}
+
 	static boolean shutdown() {
+		if (!ownProcess)
+			return true;
 		try {
 			new Mongo(InetAddress.getLoopbackAddress().getHostAddress(), Main.DB_PORT).getDB("admin").command(new BasicDBObject().append("shutdown", 1));
 			return true;
 		} catch (Exception ex) {
 			return false;
 		} finally {
-			new File("dungeongine.sav/mongod.lock").delete();
+			new File("dungeongine.sav", "mongod.lock").delete();
 		}
 	}
 
@@ -82,7 +99,7 @@ final class Database {
 			new File("dungeongine.sav/bin").mkdirs();
 			ZipFile file = new ZipFile(archive);
 			Enumeration<? extends ZipEntry> entries = file.entries();
-			for (ZipEntry entry; entries.hasMoreElements();) {
+			for (ZipEntry entry; entries.hasMoreElements(); ) {
 				entry = entries.nextElement();
 				if (entry.getName().replace(archive.getName().replace(".zip", ""), "").substring(1).startsWith("bin")) {
 					ReadableByteChannel in = Channels.newChannel(file.getInputStream(entry));
