@@ -1,9 +1,10 @@
 package dungeongine.api.map;
 
+import dungeongine.api.Storage;
 import dungeongine.api.entity.Entity;
 import dungeongine.api.entity.Player;
 
-public interface World {
+public interface World extends Storage {
 	String getName();
 
 	Tile getTileAt(Location location);
