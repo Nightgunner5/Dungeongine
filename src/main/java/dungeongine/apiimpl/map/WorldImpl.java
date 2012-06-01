@@ -1,6 +1,9 @@
 package dungeongine.apiimpl.map;
 
 import com.google.common.base.Preconditions;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import dungeongine.api.entity.Entity;
 import dungeongine.api.entity.Player;
 import dungeongine.api.map.Location;
@@ -19,15 +22,22 @@ public class WorldImpl implements World {
 		return name;
 	}
 
+	private static final LoadingCache<Location, Tile> tileCache = CacheBuilder.newBuilder().softValues().build(new CacheLoader<Location, Tile>() {
+		@Override
+		public Tile load(Location key) throws Exception {
+			return new TileImpl(key);
+		}
+	});
+
 	@Override
-	public Tile getTileAt(Location location) {
+	public Tile getTileAt(Location location) throws IllegalArgumentException {
 		Preconditions.checkArgument(location.getWorldName().equals(name));
-		return getTileAt(location.getX(), location.getY());
+		return tileCache.getUnchecked(location);
 	}
 
 	@Override
 	public Tile getTileAt(long x, long y) {
-		return null;
+		return getTileAt(new Location(this, x, y));
 	}
 
 	@Override

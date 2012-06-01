@@ -3,7 +3,7 @@ package dungeongine.net;
 import com.google.common.net.InetAddresses;
 import dungeongine.api.map.Location;
 import dungeongine.api.map.Tile;
-import dungeongine.apiimpl.map.TileImpl;
+import dungeongine.apiimpl.map.RemoteTileImpl;
 import dungeongine.client.Client;
 import dungeongine.client.ClientChatListener;
 import dungeongine.net.packet.Packet;
@@ -69,7 +69,9 @@ public final class NetworkUtils {
 	}
 
 	public static Tile readTile(DataInput input) throws IOException {
-		return new TileImpl(readLocation(input), input.readBoolean());
+		RemoteTileImpl impl = new RemoteTileImpl(readLocation(input));
+		impl.setPassable(input.readBoolean());
+		return impl;
 	}
 
 	public static void registerServerListeners() {

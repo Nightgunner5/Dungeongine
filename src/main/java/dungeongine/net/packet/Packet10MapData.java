@@ -10,6 +10,14 @@ import java.io.IOException;
 public class Packet10MapData implements Packet {
 	private Tile tile;
 
+	public Tile getTile() {
+		return tile;
+	}
+
+	public void setTile(Tile tile) {
+		this.tile = tile;
+	}
+
 	@Override
 	public void read(DataInput input) throws IOException {
 		tile = NetworkUtils.readTile(input);

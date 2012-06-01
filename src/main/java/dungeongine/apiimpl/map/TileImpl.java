@@ -12,10 +12,9 @@ public class TileImpl extends StorageImpl implements Tile {
 	private Location location;
 	private boolean passable;
 
-	public TileImpl(Location location, boolean passable) {
+	public TileImpl(Location location) {
 		super("tile", String.format("%s-%s-%s", location.getWorldName(), Long.toHexString(location.getX()), Long.toHexString(location.getY())));
 		this.location = location;
-		this.passable = passable;
 	}
 
 	@Override
@@ -41,7 +40,6 @@ public class TileImpl extends StorageImpl implements Tile {
 
 	@Override
 	protected void load(Map<String, Object> data) {
-		this.location = (Location) data.get("location");
 		this.passable = (Boolean) data.get("passable");
 	}
 
@@ -54,7 +52,6 @@ public class TileImpl extends StorageImpl implements Tile {
 
 	@Override
 	protected void serialize(Map<String, Object> data) {
-		data.put("location", location);
 		data.put("passable", passable);
 	}
 }
