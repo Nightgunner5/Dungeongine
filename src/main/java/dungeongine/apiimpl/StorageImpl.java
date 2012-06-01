@@ -3,21 +3,16 @@ package dungeongine.apiimpl;
 import com.google.common.base.Objects;
 import com.google.common.collect.MapMaker;
 import com.google.common.collect.Sets;
-import com.mongodb.*;
-import de.flapdoodle.embedmongo.MongoDBRuntime;
-import de.flapdoodle.embedmongo.MongodExecutable;
-import de.flapdoodle.embedmongo.MongodProcess;
-import de.flapdoodle.embedmongo.config.MongodConfig;
-import de.flapdoodle.embedmongo.distribution.Version;
-import de.flapdoodle.embedmongo.runtime.Network;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
 import dungeongine.Main;
 import dungeongine.api.Events;
 import dungeongine.api.Storage;
 import dungeongine.apiimpl.event.DataChangedEventImpl;
 
-import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.util.Map;
 import java.util.Set;
@@ -38,11 +33,7 @@ public abstract class StorageImpl implements Storage {
 				for (StorageImpl instance : instances) {
 					instance.save();
 				}
-				try {
-					database.getMongo().getDB("admin").command(new BasicDBObject().append("shutdown", 1));
-				} catch (MongoException.Network ex) {
-					// Expected
-				}
+				Database.shutdown();
 			}
 		});
 	}
@@ -76,26 +67,10 @@ public abstract class StorageImpl implements Storage {
 
 	protected abstract void serialize(Map<String, Object> data);
 
-	private static final MongodProcess mongod;
 	private static final DB database;
 	static {
+		Database.startup();
 		try {
-			new Mongo(InetAddress.getLoopbackAddress().getHostAddress(), Main.DB_PORT).getDB("admin").command(new BasicDBObject().append("shutdown", 1));
-			new File("dungeongine.sav/mongod.lock").delete();
-		} catch (Exception ex) {
-			// Ignored. This code is only here to clean up non-clean shutdowns.
-		}
-		MongoDBRuntime runtime = MongoDBRuntime.getDefaultInstance();
-		try {
-			MongodExecutable executable = runtime.prepare(new MongodConfig(Version.V2_0, Main.DB_PORT, Network.localhostIsIPv6(), "dungeongine.sav"));
-			try {
-				Field field = executable.getClass().getDeclaredField("_stopped");
-				field.setAccessible(true);
-				field.set(executable, true);
-			} catch (Exception ex) {
-				throw new RuntimeException(ex);
-			}
-			mongod = executable.start();
 			Mongo mongo = new Mongo(InetAddress.getLoopbackAddress().getHostAddress(), Main.DB_PORT);
 			database = mongo.getDB("dungeongine");
 		} catch (IOException ex) {
