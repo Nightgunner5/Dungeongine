@@ -17,7 +17,7 @@ public class CraftedEquippableImpl extends ItemImpl implements CraftedEquippable
 	}
 
 	@Override
-	public void setReagents(Item[] reagents) {
+	public void setReagents(Item... reagents) {
 		craftable.setReagents(reagents);
 	}
 

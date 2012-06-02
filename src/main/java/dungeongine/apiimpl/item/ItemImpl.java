@@ -3,10 +3,7 @@ package dungeongine.apiimpl.item;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import dungeongine.api.StatType;
-import dungeongine.api.item.Craftable;
-import dungeongine.api.item.CraftedEquippable;
-import dungeongine.api.item.Equippable;
-import dungeongine.api.item.Item;
+import dungeongine.api.item.*;
 
 import java.util.List;
 import java.util.Map;
@@ -38,11 +35,11 @@ public class ItemImpl implements Item {
 		item.setLevel((Integer) data.get("level"));
 		item.setQuality(Quality.valueOf((String) data.get("quality")));
 		if (item instanceof Craftable) {
-			List<Map<String, Object>> reagents = (List<Map<String, Object>>) data.get("reagents");
+			List<Long> reagents = (List<Long>) data.get("reagents");
 			Item[] parsed = new Item[reagents.size()];
 			int i = 0;
-			for (Map<String, Object> reagent : reagents) {
-				parsed[i++] = unserialize(reagent);
+			for (Long reagent : reagents) {
+				parsed[i++] = Items.get(reagent);
 			}
 			((Craftable) item).setReagents(parsed);
 		}
@@ -51,6 +48,7 @@ public class ItemImpl implements Item {
 			((Equippable) item).setUnique((Boolean) data.get("unique"));
 			((Equippable) item).setPrimaryStat(StatType.valueOf((String) data.get("primaryStat")));
 			((Equippable) item).setSecondaryStat(StatType.valueOf((String) data.get("secondaryStat")));
+			((Equippable) item).setTertiaryStat(StatType.valueOf((String) data.get("tertiaryStat")));
 		}
 		return item;
 	}
@@ -63,9 +61,9 @@ public class ItemImpl implements Item {
 		data.put("quality", item.getQuality().name());
 		if (item instanceof Craftable) {
 			data.put("type", "craftable");
-			List<Map<String, Object>> reagents = Lists.newArrayList();
+			List<Long> reagents = Lists.newArrayList();
 			for (Item reagent : ((Craftable) item).getReagents()) {
-				reagents.add(serialize(reagent));
+				reagents.add(Items.getID(reagent));
 			}
 			data.put("reagents", reagents);
 		}
@@ -75,6 +73,7 @@ public class ItemImpl implements Item {
 			data.put("unique", ((Equippable) item).isUnique());
 			data.put("primaryStat", ((Equippable) item).getPrimaryStat().name());
 			data.put("secondaryStat", ((Equippable) item).getSecondaryStat().name());
+			data.put("tertiaryStat", ((Equippable) item).getTertiaryStat().name());
 		}
 		if (item instanceof CraftedEquippable) {
 			data.put("type", "craftedequippable");
