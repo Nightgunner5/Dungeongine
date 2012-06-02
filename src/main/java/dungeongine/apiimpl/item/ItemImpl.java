@@ -14,6 +14,7 @@ import java.util.Map;
 public class ItemImpl implements Item {
 	private int level;
 	private String name;
+	private Quality quality;
 
 	public static Item unserialize(Map<String, Object> data) {
 		Item item;
@@ -35,6 +36,7 @@ public class ItemImpl implements Item {
 		}
 		item.setName((String) data.get("name"));
 		item.setLevel((Integer) data.get("level"));
+		item.setQuality(Quality.valueOf((String) data.get("quality")));
 		if (item instanceof Craftable) {
 			List<Map<String, Object>> reagents = (List<Map<String, Object>>) data.get("reagents");
 			Item[] parsed = new Item[reagents.size()];
@@ -58,6 +60,7 @@ public class ItemImpl implements Item {
 		data.put("type", "item");
 		data.put("name", item.getName());
 		data.put("level", item.getLevel());
+		data.put("quality", item.getQuality().name());
 		if (item instanceof Craftable) {
 			data.put("type", "craftable");
 			List<Map<String, Object>> reagents = Lists.newArrayList();
@@ -97,5 +100,15 @@ public class ItemImpl implements Item {
 	@Override
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	@Override
+	public Quality getQuality() {
+		return quality;
+	}
+
+	@Override
+	public void setQuality(Quality quality) {
+		this.quality = quality;
 	}
 }

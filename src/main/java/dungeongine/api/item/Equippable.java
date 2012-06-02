@@ -40,6 +40,18 @@ public interface Equippable extends Item {
 	void setSecondaryStat(StatType secondaryStat);
 
 	/**
+	 * Gets the tertiary stat type (epic items have two secondary stats). This is usually one of the {@link StatType}s
+	 * other than the three {@link #getPrimaryStat() primaries}.
+	 */
+	StatType getTertiaryStat();
+
+	/**
+	 * Sets the tertiary stat type (epic items have two secondary stats) . This is usually one of the {@link StatType}s
+	 * other than the three {@link #getPrimaryStat() primaries}.
+	 */
+	void setTertiaryStat(StatType tertiaryStat);
+
+	/**
 	 * A slot for an equippable item.
 	 * <p/>
 	 * There are ten {@link #FINGER} slots, corresponding to the fingers on human hands.

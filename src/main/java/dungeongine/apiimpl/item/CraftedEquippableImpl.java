@@ -60,4 +60,14 @@ public class CraftedEquippableImpl extends ItemImpl implements CraftedEquippable
 	public void setSecondaryStat(StatType secondaryStat) {
 		equippable.setSecondaryStat(secondaryStat);
 	}
+
+	@Override
+	public StatType getTertiaryStat() {
+		return equippable.getTertiaryStat();
+	}
+
+	@Override
+	public void setTertiaryStat(StatType tertiaryStat) {
+		equippable.setTertiaryStat(tertiaryStat);
+	}
 }
