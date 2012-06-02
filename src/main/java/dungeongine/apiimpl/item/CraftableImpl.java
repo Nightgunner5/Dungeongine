@@ -13,6 +13,6 @@ public class CraftableImpl extends ItemImpl implements Craftable {
 
 	@Override
 	public void setReagents(Item[] reagents) {
-		this.reagents = reagents;
+		this.reagents = reagents.clone();
 	}
 }

@@ -16,7 +16,7 @@ public final class GUI {
 	private static JFrame window;
 	private static JFrame server;
 
-	public static void start() {
+	static void setUI() {
 		try {
 			UIManager.setLookAndFeel(new javax.swing.plaf.nimbus.NimbusLookAndFeel());
 		} catch (UnsupportedLookAndFeelException ex1) {
@@ -26,6 +26,10 @@ public final class GUI {
 				// Oh well, it's just appearances anyway.
 			}
 		}
+	}
+
+	public static void start() {
+		setUI();
 		window = new JFrame("Dungeongine");
 		window.setLayout(new BorderLayout());
 		window.add(ConsoleGUI.instance, BorderLayout.SOUTH);

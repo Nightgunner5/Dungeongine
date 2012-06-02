@@ -2,7 +2,10 @@ package dungeongine.apiimpl.item;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import dungeongine.api.StatType;
 import dungeongine.api.item.Craftable;
+import dungeongine.api.item.CraftedEquippable;
+import dungeongine.api.item.Equippable;
 import dungeongine.api.item.Item;
 
 import java.util.List;
@@ -10,10 +13,17 @@ import java.util.Map;
 
 public class ItemImpl implements Item {
 	private int level;
+	private String name;
 
 	public static Item unserialize(Map<String, Object> data) {
 		Item item;
 		switch ((String) data.get("type")) {
+			case "craftedequippable":
+				item = new CraftedEquippableImpl();
+				break;
+			case "equippable":
+				item = new EquippableImpl();
+				break;
 			case "craftable":
 				item = new CraftableImpl();
 				break;
@@ -23,8 +33,9 @@ public class ItemImpl implements Item {
 			default:
 				throw new IllegalStateException("Unknown type: " + data.get("type"));
 		}
+		item.setName((String) data.get("name"));
 		item.setLevel((Integer) data.get("level"));
-		if (data.containsKey("reagents")) {
+		if (item instanceof Craftable) {
 			List<Map<String, Object>> reagents = (List<Map<String, Object>>) data.get("reagents");
 			Item[] parsed = new Item[reagents.size()];
 			int i = 0;
@@ -33,12 +44,19 @@ public class ItemImpl implements Item {
 			}
 			((Craftable) item).setReagents(parsed);
 		}
+		if (item instanceof Equippable) {
+			((Equippable) item).setSlot(Equippable.Slot.valueOf((String) data.get("slot")));
+			((Equippable) item).setUnique((Boolean) data.get("unique"));
+			((Equippable) item).setPrimaryStat(StatType.valueOf((String) data.get("primaryStat")));
+			((Equippable) item).setSecondaryStat(StatType.valueOf((String) data.get("secondaryStat")));
+		}
 		return item;
 	}
 
 	public static Map<String, Object> serialize(Item item) {
 		Map<String, Object> data = Maps.newLinkedHashMap();
 		data.put("type", "item");
+		data.put("name", item.getName());
 		data.put("level", item.getLevel());
 		if (item instanceof Craftable) {
 			data.put("type", "craftable");
@@ -47,6 +65,16 @@ public class ItemImpl implements Item {
 				reagents.add(serialize(reagent));
 			}
 			data.put("reagents", reagents);
+		}
+		if (item instanceof Equippable) {
+			data.put("type", "equippable");
+			data.put("slot", ((Equippable) item).getSlot().name());
+			data.put("unique", ((Equippable) item).isUnique());
+			data.put("primaryStat", ((Equippable) item).getPrimaryStat().name());
+			data.put("secondaryStat", ((Equippable) item).getSecondaryStat().name());
+		}
+		if (item instanceof CraftedEquippable) {
+			data.put("type", "craftedequippable");
 		}
 		return data;
 	}
@@ -59,5 +87,15 @@ public class ItemImpl implements Item {
 	@Override
 	public void setLevel(int level) {
 		this.level = level;
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public void setName(String name) {
+		this.name = name;
 	}
 }
