@@ -3,6 +3,8 @@ package dungeongine.apiimpl.item;
 import dungeongine.api.item.Craftable;
 import dungeongine.api.item.Item;
 
+import java.util.Arrays;
+
 public class CraftableImpl extends ItemImpl implements Craftable {
 	private ItemReference[] reagents = {};
 
@@ -19,5 +21,6 @@ public class CraftableImpl extends ItemImpl implements Craftable {
 		this.reagents = new ItemReference[reagents.length];
 		for (int i = 0; i < reagents.length; i++)
 			this.reagents[i] = new ItemReference(reagents[i]);
+		Arrays.sort(this.reagents);
 	}
 }
