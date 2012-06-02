@@ -63,6 +63,22 @@ public interface Item {
 		 * <p/>
 		 * Others: Extremely rare drops.
 		 */
-		LEGENDARY
+		LEGENDARY;
+
+		public String getName() {
+			switch (this) {
+				case POOR:
+					return "Poor";
+				case UNCOMMON:
+					return "Uncommon";
+				case RARE:
+					return "Rare";
+				case EPIC:
+					return "Epic";
+				case LEGENDARY:
+					return "Legendary";
+			}
+			throw new IllegalStateException();
+		}
 	}
 }
