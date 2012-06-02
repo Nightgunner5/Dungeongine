@@ -1,5 +1,6 @@
 package dungeongine.api.item;
 
+import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -34,6 +35,7 @@ public final class Items {
 	}
 
 	public static long getID(Item item) {
+		Preconditions.checkNotNull(item);
 		DBObject data = StorageImpl.database.getCollection("items").findOne(new BasicDBObject().append("data", ItemImpl.serialize(item)));
 		if (data != null)
 			return Long.parseLong((String) data.get("identifier"), 16);

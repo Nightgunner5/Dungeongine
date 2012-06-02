@@ -39,4 +39,18 @@ public class ItemReference implements Comparable<ItemReference> {
 	public int hashCode() {
 		return Longs.hashCode(id);
 	}
+
+	public static ItemReference[] get(Item[] items) {
+		ItemReference[] converted = new ItemReference[items.length];
+		for (int i = 0; i < items.length; i++)
+			converted[i] = new ItemReference(items[i]);
+		return converted;
+	}
+
+	public static Item[] get(ItemReference[] items) {
+		Item[] converted = new Item[items.length];
+		for (int i = 0; i < items.length; i++)
+			converted[i] = items[i].getItem();
+		return converted;
+	}
 }

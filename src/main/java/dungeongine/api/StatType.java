@@ -22,4 +22,20 @@ public enum StatType {
 	STAMINA,
 	/** Secondary: chance of finding more/better loot */
 	WEALTH,
+
+	;
+
+	public boolean isPrimary() {
+		switch (this) {
+			case DEXTERITY:
+			case FORCE:
+			case WISDOM:
+				return true;
+		}
+		return false;
+	}
+
+	public boolean isSecondary() {
+		return !isPrimary();
+	}
 }

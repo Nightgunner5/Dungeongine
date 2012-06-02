@@ -13,5 +13,5 @@ public interface Resource extends Entity {
 	void forceRespawn();
 
 	Item[] getDrops();
-	void setDrops(Item[] drops);
+	void setDrops(Item... drops);
 }

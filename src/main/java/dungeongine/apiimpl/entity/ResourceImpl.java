@@ -5,9 +5,11 @@ import com.google.common.collect.Lists;
 import dungeongine.api.Dungeongine;
 import dungeongine.api.entity.Resource;
 import dungeongine.api.item.Item;
-import dungeongine.apiimpl.item.ItemImpl;
+import dungeongine.api.item.Items;
+import dungeongine.apiimpl.item.ItemReference;
 
 import java.lang.ref.WeakReference;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +17,7 @@ import java.util.Map;
 public class ResourceImpl extends EntityImpl implements Resource {
 	private long respawnTime;
 	private long timeRemaining;
-	private Item[] drops;
+	private ItemReference[] drops;
 
 	public ResourceImpl(String id) {
 		super(id);
@@ -61,12 +63,14 @@ public class ResourceImpl extends EntityImpl implements Resource {
 
 	@Override
 	public Item[] getDrops() {
-		return drops;
+		return ItemReference.get(drops);
 	}
 
 	@Override
-	public void setDrops(Item[] drops) {
-		this.drops = drops;
+	public void setDrops(Item... drops) {
+		dataChanged("drops", getDrops(), drops);
+		this.drops = ItemReference.get(drops);
+		Arrays.sort(this.drops);
 	}
 
 	@Override
@@ -77,11 +81,11 @@ public class ResourceImpl extends EntityImpl implements Resource {
 		if (!isSpawned())
 			Dungeongine.Ticker.scheduleTick(new ResourceTick(this), 20);
 
-		List<Map<String, Object>> drops = (List<Map<String, Object>>) data.get("drops");
-		this.drops = new Item[drops.size()];
+		List<Long> drops = (List<Long>) data.get("drops");
+		this.drops = new ItemReference[drops.size()];
 		int i = 0;
-		for (Map<String, Object> drop : drops) {
-			this.drops[i++] = ItemImpl.unserialize(drop);
+		for (Long drop : drops) {
+			this.drops[i++] = new ItemReference(Items.get(drop));
 		}
 	}
 
@@ -100,9 +104,9 @@ public class ResourceImpl extends EntityImpl implements Resource {
 		data.put("respawnTime", respawnTime);
 		data.put("timeRemaining", timeRemaining);
 
-		List<Map<String, Object>> drops = Lists.newArrayList();
-		for (Item drop : this.drops) {
-			drops.add(ItemImpl.serialize(drop));
+		List<Long> drops = Lists.newArrayList();
+		for (ItemReference drop : this.drops) {
+			drops.add(drop.getID());
 		}
 		data.put("drops", drops);
 	}

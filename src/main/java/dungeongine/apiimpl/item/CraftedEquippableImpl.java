@@ -9,7 +9,6 @@ import dungeongine.api.item.Item;
 public class CraftedEquippableImpl extends ItemImpl implements CraftedEquippable {
 	private final Craftable craftable = new CraftableImpl();
 	private final Equippable equippable = new EquippableImpl();
-	private int level;
 
 	@Override
 	public Item[] getReagents() {

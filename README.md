@@ -12,8 +12,11 @@
 
 ## To do
 * Entities
+* More items
+* More documentation
 
 ## Done
 * Networking
 * Data storage
 * Chat
+* Item system

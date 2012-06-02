@@ -10,17 +10,12 @@ public class CraftableImpl extends ItemImpl implements Craftable {
 
 	@Override
 	public Item[] getReagents() {
-		Item[] reagents = new Item[this.reagents.length];
-		for (int i = 0; i < reagents.length; i++)
-			reagents[i] = this.reagents[i].getItem();
-		return reagents;
+		return ItemReference.get(reagents);
 	}
 
 	@Override
 	public void setReagents(Item... reagents) {
-		this.reagents = new ItemReference[reagents.length];
-		for (int i = 0; i < reagents.length; i++)
-			this.reagents[i] = new ItemReference(reagents[i]);
+		this.reagents = ItemReference.get(reagents);
 		Arrays.sort(this.reagents);
 	}
 }

@@ -13,7 +13,7 @@ public final class ItemStack {
 	private final Map<String, Object> data;
 
 	private ItemStack(Item item, int count, Map<String, Object> data) {
-		this.item = new ItemReference(item);
+		this.item = item == null ? null : new ItemReference(item);
 		this.count = count;
 		this.data = Maps.newConcurrentMap();
 		if (data != null)
@@ -21,7 +21,7 @@ public final class ItemStack {
 	}
 
 	public Item getItem() {
-		return item.getItem();
+		return item == null ? null : item.getItem();
 	}
 
 	public int getCount() {
