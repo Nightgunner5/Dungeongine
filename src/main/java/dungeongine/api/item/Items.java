@@ -7,8 +7,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import dungeongine.apiimpl.BasicStorage;
 import dungeongine.apiimpl.StorageImpl;
-import dungeongine.apiimpl.item.ItemImpl;
-import dungeongine.apiimpl.item.ItemStorage;
+import dungeongine.apiimpl.item.*;
 
 public final class Items {
 	private Items() {
@@ -51,5 +50,17 @@ public final class Items {
 		storage.setItem(item);
 		storage.save();
 		return id;
+	}
+
+	public static <T extends Item> T create(Class<T> clazz) throws IllegalArgumentException {
+		if (clazz == Item.class)
+			return (T) new ItemImpl();
+		if (clazz == Craftable.class)
+			return (T) new CraftableImpl();
+		if (clazz == Equippable.class)
+			return (T) new EquippableImpl();
+		if (clazz == CraftedEquippable.class)
+			return (T) new CraftedEquippableImpl();
+		throw new IllegalArgumentException("Unknown item type " + clazz.getName());
 	}
 }
