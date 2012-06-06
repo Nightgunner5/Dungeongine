@@ -12,6 +12,7 @@ import dungeongine.api.Dungeongine;
 import dungeongine.api.Events;
 import dungeongine.api.Storage;
 import dungeongine.apiimpl.event.DataChangedEventImpl;
+import dungeongine.bootstrap.base.Database;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -28,13 +29,12 @@ public abstract class StorageImpl implements Storage {
 	private boolean dirty;
 
 	static {
-		Runtime.getRuntime().addShutdownHook(new Thread() {
+		Database.addShutdownCallback(new Thread() {
 			@Override
 			public void run() {
 				for (StorageImpl instance : instances) {
 					instance.save();
 				}
-				Database.shutdown();
 			}
 		});
 	}
@@ -72,17 +72,7 @@ public abstract class StorageImpl implements Storage {
 
 	protected abstract void serialize(Map<String, Object> data);
 
-	public static final DB database;
-
-	static {
-		Database.startup();
-		try {
-			Mongo mongo = new Mongo(InetAddress.getLoopbackAddress().getHostAddress(), Main.DB_PORT);
-			database = mongo.getDB("dungeongine");
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
-		}
-	}
+	public static final DB database = Database.getDB();
 
 	private Map<String, Object> getData() {
 		DBObject data = database.getCollection(collection).findOne(query);

@@ -1,6 +1,8 @@
-package dungeongine.apiimpl;
+package dungeongine.bootstrap.base;
 
+import com.google.common.collect.Lists;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
 import com.mongodb.Mongo;
 import dungeongine.Main;
 
@@ -14,15 +16,25 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-final class Database {
+public final class Database {
 	private Database() {
 	}
 
-	static void startup() {
+    public static DB getDB() {
+        try {
+            Mongo mongo = new Mongo(InetAddress.getLoopbackAddress().getHostAddress(), Main.DB_PORT);
+            return mongo.getDB("dungeongine");
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+	private static void startup() {
 		if (!ownProcess)
 			return;
 		try {
@@ -39,7 +51,13 @@ final class Database {
 
 	private static final boolean ownProcess;
 
-	static {
+    private static final List<Thread> callbacks = Lists.newArrayList();
+
+    public static void addShutdownCallback(Thread callback) {
+        callbacks.add(callback);
+    }
+
+    static {
 		boolean own;
 		try {
 			new Socket(InetAddress.getLoopbackAddress(), Main.DB_PORT).close();
@@ -48,9 +66,25 @@ final class Database {
 			own = true;
 		}
 		ownProcess = own;
+        startup();
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                for (Thread callback : callbacks) {
+                    callback.start();
+                }
+                for (Thread callback : callbacks) {
+                    try {
+                        callback.join();
+                    } catch (InterruptedException ex) {
+                    }
+                }
+                shutdown();
+            }
+        });
 	}
 
-	static boolean shutdown() {
+	private static boolean shutdown() {
 		if (!ownProcess)
 			return true;
 		try {
