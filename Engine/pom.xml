@@ -11,4 +11,12 @@
 
     <artifactId>dungeongine.engine</artifactId>
     <name>Dungeonginengine</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.llamaslayers</groupId>
+            <artifactId>dungeongine.storage</artifactId>
+            <version>${parent.version}</version>
+        </dependency>
+    </dependencies>
 </project>

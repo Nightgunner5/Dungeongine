@@ -9,10 +9,13 @@
     <packaging>pom</packaging>
     <name>Dungeongine</name>
     <version>0.1-SNAPSHOT</version>
+
+    <url>https://github.com/Nightgunner5/Dungeongine/wiki</url>
+
     <modules>
+        <module>Aggregate</module>
         <module>Engine</module>
         <module>Storage</module>
-        <module>Aggregate</module>
     </modules>
 
     <dependencies>
@@ -55,5 +58,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
