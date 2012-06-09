@@ -20,4 +20,11 @@ class NoopStorage implements IStorage {
 			storage[object.class] = [:]
 		storage[object.class][identifier] = object
 	}
+
+	@Override
+	def <T> List<T> getAll(Class<T> type) {
+		if (type in storage)
+			return new ArrayList<>(storage[type].values())
+		return Collections.emptyList()
+	}
 }

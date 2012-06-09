@@ -31,6 +31,11 @@ class StorageCache implements IStorage {
 		backing.save(identifier, object)
 	}
 
+	@Override
+	def <T> List<T> getAll(Class<T> type) {
+		return backing.getAll(type)
+	}
+
 	@EqualsAndHashCode
 	class CacheKey {
 		Class<?> type

@@ -34,12 +34,12 @@
         <dependency>
             <groupId>net.llamaslayers</groupId>
             <artifactId>dungeongine.engine</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>net.llamaslayers</groupId>
             <artifactId>dungeongine.storage</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
     </dependencies>
 </project>
