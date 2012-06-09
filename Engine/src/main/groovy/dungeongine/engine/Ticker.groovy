@@ -1,32 +1,47 @@
 package dungeongine.engine
 
+import groovy.transform.PackageScope
+
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.logging.Level
 import java.util.logging.Logger
 
-@Singleton
-class Ticker {
-	private final LinkedList<List<Closure>> ticks = new LinkedList<>()
+final class Ticker {
+	private static final LinkedList<List<Closure>> ticks = new LinkedList<>()
 
-	void nextTick(Closure callback) {
+	private Ticker() {}
+
+	static void nextTick(Closure callback) {
 		synchronized (ticks) {
-			if (!(0 in ticks))
-				ticks[0] = []
-			ticks[0][] = callback
+			if (ticks.isEmpty())
+				ticks.add([])
+			ticks[0].add(callback)
 		}
 	}
 
-	void after(int delay, Closure callback) throws IllegalArgumentException {
+	static void after(int delay, Closure callback) throws IllegalArgumentException {
 		if (delay <= 0)
 			throw new IllegalArgumentException("Delay must be positive ($delay)")
 		synchronized (ticks) {
-			while (!(delay in ticks))
-				ticks[] = []
-			ticks[delay][] = callback
+			while (ticks.size() <= delay)
+				ticks.add([])
+			ticks[delay].add(callback)
 		}
 	}
 
+	static void waitForNextTick() throws InterruptedException {
+		final AtomicBoolean lock = new AtomicBoolean(false)
+		nextTick {synchronized (lock) {lock.set(true); lock.notify()}}
+		synchronized (lock) {
+			if (!lock.get())
+				lock.wait(50)
+		}
+	}
+
+	@PackageScope
+	static final Thread thread
 	static {
-		new Thread({
+		thread = new Thread({
 			while (!Thread.interrupted()) {
 				try {
 					Thread.sleep(50)
@@ -38,7 +53,7 @@ class Ticker {
 
 				try {
 					synchronized (ticks) {
-						thisTick = Ticker.instance.ticks.removeFirst()
+						thisTick = ticks.removeFirst()
 					}
 				} catch (NoSuchElementException) {
 					continue
@@ -50,6 +65,8 @@ class Ticker {
 					}
 				}
 			}
-		}, "Ticker").start()
+		}, "Ticker")
+		thread.daemon = true
+		thread.start()
 	}
 }
