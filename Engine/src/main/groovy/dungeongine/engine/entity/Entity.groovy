@@ -12,7 +12,7 @@ final class Entity implements Renderable {
 	EntityData data
 
 	@Override
-	protected void finalize() {
+	void finalize() {
 		save()
 	}
 
