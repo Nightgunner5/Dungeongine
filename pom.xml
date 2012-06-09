@@ -12,6 +12,7 @@
     <modules>
         <module>Engine</module>
         <module>Storage</module>
+        <module>Aggregate</module>
     </modules>
 
     <dependencies>

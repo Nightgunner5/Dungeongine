@@ -9,8 +9,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>Storage</artifactId>
+    <artifactId>dungeongine.storage</artifactId>
     <name>Dungeongine Storage</name>
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
