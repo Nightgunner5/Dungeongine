@@ -2,7 +2,11 @@ package dungeongine.storage
 
 class Storage {
 	private static IStorage instance
+	/**
+	 * Gets an instance of {@link IStorage}.
+	 */
 	static IStorage getInstance() {
+		init()
 		instance
 	}
 

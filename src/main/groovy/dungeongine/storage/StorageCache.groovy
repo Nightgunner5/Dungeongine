@@ -4,6 +4,7 @@ import com.google.common.cache.Cache
 import groovy.transform.PackageScope
 import groovy.transform.EqualsAndHashCode
 import com.google.common.cache.CacheBuilder
+import groovy.transform.TupleConstructor
 
 @PackageScope
 class StorageCache implements IStorage {

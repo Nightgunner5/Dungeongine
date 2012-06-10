@@ -5,6 +5,9 @@ import groovy.sql.Sql
 import groovy.json.JsonSlurper
 import groovy.transform.PackageScope
 
+/**
+ * Storage implementation that uses SQLite as a backend. Data is converted to JSON before being put in the database.
+ */
 @PackageScope
 class SqlStorage implements IStorage {
 	private final Sql db = Sql.newInstance("jdbc:sqlite:dungeongine.db", "org.sqlite.JDBC")

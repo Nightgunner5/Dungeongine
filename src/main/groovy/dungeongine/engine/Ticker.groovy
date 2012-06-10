@@ -5,11 +5,17 @@ import groovy.transform.PackageScope
 import java.util.logging.Level
 import java.util.logging.Logger
 
+/**
+ * Allows scheduling of events based on 50ms ticks.
+ */
 final class Ticker {
 	private static final LinkedList<List<Closure>> ticks = new LinkedList<>()
 
 	private Ticker() {}
 
+	/**
+	 * Schedules a Closure to be called on the next tick.
+	 */
 	static void nextTick(Closure callback) {
 		synchronized (ticks) {
 			if (ticks.isEmpty())
@@ -18,6 +24,10 @@ final class Ticker {
 		}
 	}
 
+	/**
+	 * Schedules a Closure to be called after a given delay of ticks. A delay of 0 would be equivalent to
+	 * the nextTick method, but non-positive delays are not allowed.
+	 */
 	static void after(int delay, Closure callback) throws IllegalArgumentException {
 		if (delay <= 0)
 			throw new IllegalArgumentException("Delay must be positive ($delay)")
@@ -30,6 +40,9 @@ final class Ticker {
 
 	private static final Object[] tickLock = new Object[0]
 
+	/**
+	 * Pauses the current thread until the next ticker tick completes.
+	 */
 	static void waitForNextTick() {
 		synchronized (tickLock) {
 			tickLock.wait()
@@ -40,15 +53,13 @@ final class Ticker {
 	static final Thread thread
 	static {
 		thread = new Thread({
+			long nextTick = System.currentTimeMillis()
 			while (!Thread.interrupted()) {
 				synchronized (tickLock) {
 					tickLock.notifyAll()
 				}
-				try {
-					Thread.sleep(50)
-				} catch (InterruptedException) {
-					return
-				}
+				nextTick += 50
+				Thread.sleep(Math.max(0, nextTick - System.currentTimeMillis()))
 
 				List<Closure> thisTick
 
