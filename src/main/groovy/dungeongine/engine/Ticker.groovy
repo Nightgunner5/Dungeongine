@@ -2,7 +2,6 @@ package dungeongine.engine
 
 import groovy.transform.PackageScope
 
-import java.util.concurrent.atomic.AtomicBoolean
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -29,12 +28,11 @@ final class Ticker {
 		}
 	}
 
-	static void waitForNextTick() throws InterruptedException {
-		final AtomicBoolean lock = new AtomicBoolean(false)
-		nextTick {synchronized (lock) {lock.set(true); lock.notify()}}
-		synchronized (lock) {
-			if (!lock.get())
-				lock.wait(50)
+	private static final Object[] tickLock = new Object[0]
+
+	static void waitForNextTick() {
+		synchronized (tickLock) {
+			tickLock.wait()
 		}
 	}
 
@@ -43,6 +41,9 @@ final class Ticker {
 	static {
 		thread = new Thread({
 			while (!Thread.interrupted()) {
+				synchronized (tickLock) {
+					tickLock.notifyAll()
+				}
 				try {
 					Thread.sleep(50)
 				} catch (InterruptedException) {
