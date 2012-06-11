@@ -38,14 +38,18 @@ final class Ticker {
 		}
 	}
 
-	private static final Object[] tickLock = new Object[0]
+	private static final Object[] tickStart = new Object[0]
+	private static final Object[] tickEnd = new Object[0]
 
 	/**
 	 * Pauses the current thread until the next ticker tick completes.
 	 */
 	static void waitForNextTick() {
-		synchronized (tickLock) {
-			tickLock.wait()
+		synchronized (tickStart) {
+			tickStart.wait()
+		}
+		synchronized (tickEnd) {
+			tickEnd.wait()
 		}
 	}
 
@@ -55,8 +59,8 @@ final class Ticker {
 		thread = new Thread({
 			long nextTick = System.currentTimeMillis()
 			while (!Thread.interrupted()) {
-				synchronized (tickLock) {
-					tickLock.notifyAll()
+				synchronized (tickEnd) {
+					tickEnd.notifyAll()
 				}
 				nextTick += 50
 				Thread.sleep(Math.max(0, nextTick - System.currentTimeMillis()))
@@ -69,6 +73,10 @@ final class Ticker {
 					}
 				} catch (NoSuchElementException) {
 					continue
+				}
+
+				synchronized (tickStart) {
+					tickStart.notifyAll()
 				}
 
 				thisTick.each { tick ->
